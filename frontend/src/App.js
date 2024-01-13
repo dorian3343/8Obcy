@@ -15,7 +15,7 @@ function App() {
     useEffect(() => {
         fetch('http://localhost:8080/count')
             .then((response) => response.json())
-            .then((json) => {console.log(json);setUserCount(json.Count)});
+            .then((json) => {setUserCount(json.Count)});
     }, []);
 
 
@@ -24,6 +24,9 @@ function App() {
     const [status,setStatus] = useState("Szukanie rozmówce. . . ")
     const [inChat,setInChat] = useState(false);
     const [message, setMessage] = useState("")
+    const [modalStatePartner, setModalStatePartner] = useState(false)
+    const [modalStateEmpty, setModalStateEmpty] = useState(false)
+
     function handleChange(event) {
         setMessage(event.target.value);
     }
@@ -32,7 +35,7 @@ function App() {
         setInChat(true);
         socket = new WebSocket('ws://localhost:8080/ws');
 
-        socket.addEventListener('open', (event) => {
+        socket.addEventListener('open', () => {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify(new WsMessage("UserMessage", "FindPartner", "")));
             }
@@ -49,16 +52,38 @@ function App() {
                 }
             } else if (data.MessageType === "PartnerMessage") {
                 setMessages(prevMessages => [...prevMessages, <PMessage key={generateUniqueId()} message={data.Contents}></PMessage>]);
+            } else if (data.MessageType === "Error"){
+                if (data.Contents=== "Error! Partner Disconnected"){
+                    setModalStatePartner(true)
+                    setStatus("Zakończono rozmowe z obcym...");
+                }
             }
         });
         socket.addEventListener("close", () => {
             socket.send(JSON.stringify(new WsMessage("SystemMessage","Close","")));
-            setInChat(false)
         });
 
     }
+    function handleKeyDown(event){
+        if (event.key === 'Enter') {
+            handleSend();
+        }
+    };
+
+    function closeEmptyModal(){
+        setModalStateEmpty(false)
+    }
+
 
     function handleSend() {
+        console.log(message)
+        //regex because it sends message with just enter in it
+        const regex = /^[ \n]*$/;
+        if (regex.test(message)) {
+            setModalStateEmpty(true)
+            return
+        }
+
         setMessages(prevMessages => [...prevMessages, <UMessage key={generateUniqueId()} message={message}></UMessage>]);
         setMessage("")
         document.getElementById("main-input").value = ""
@@ -89,7 +114,7 @@ function App() {
                                 <p style={{color: "#9E8F6D"}}>ESC</p>
                             </div>
                             <div className="text-input-wrapper">
-                                <textarea type="text" className="text-input" placeholder="Cześć..." id="main-input" onChange={handleChange}/>
+                                <textarea  className="text-input" placeholder="Cześć..." id="main-input"  onKeyDown={handleKeyDown} onChange={handleChange}/>
                             </div>
                             <div className="button-wrapper" id="buttonSend" onClick={handleSend}>
                                 <p>Wyślij wiadomość</p>
@@ -122,6 +147,16 @@ function App() {
                     </div>
                 </div>}
             </div>
+            {
+                modalStateEmpty ?
+                    <div className="modal-wrapper-empty">
+                        <p>Nie można wysyłąć pustych wiadomości. Napisz coś :((</p>
+                        <hr className="modal-line"/>
+                        <div className="modal-button-wrapper">
+                            <button className="modal-button" onClick={closeEmptyModal}>Ok</button>
+                        </div>
+                    </div> : null
+            }
         </div>
 
     );

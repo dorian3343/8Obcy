@@ -48,12 +48,13 @@ h1{
 .content-wrapper {
     background-color: #3C3F42;
     width: 1500px;
-    min-height: 700px;
+    height: 700px;
     border-radius: 0.6em 0.6em 0 0;
     border: 2px solid #444;
     box-shadow: 0 4px 5px -2px black;
     padding: 10px;
     margin-bottom: 3px;
+    overflow-y: scroll;
 }
 
 
@@ -94,3 +95,41 @@ h1{
     background-color:  #494848;
 }
 
+.modal-wrapper-empty {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    background-color: #1e1e21;
+    border-radius: 0.6em;
+    border: 2px solid #444;
+    box-shadow: 0 4px 5px -2px black;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-wrapper p{
+    font-size: 18px;
+}
+
+.modal-button-wrapper{
+text-align: center;
+}
+
+.modal-button{
+    font-size: 25px;
+    width: 70px;
+    border-radius: 0;
+    color: #aaa;
+    background-color: #65665E;
+    border: 1px #2C2C2C;
+}
+.modal-button:hover{
+    background-color: #4f504a;
+}
+.modal-line {
+    width: 100%;
+    border: 1px solid #65665E;
+}
