@@ -12,62 +12,108 @@ function generateUniqueId() {
 
 
 function App() {
+
     useEffect(() => {
         fetch('http://localhost:8080/count')
             .then((response) => response.json())
-            .then((json) => {setUserCount(json.Count)});
+            .then((json) => {
+                setState(prevState => ({ ...prevState, userCount: json.Count }));
+            });
     }, []);
 
 
-    const [userCount, setUserCount] = useState(0)
-    const [messages, setMessages] = useState([])
-    const [status,setStatus] = useState("Szukanie rozmówce. . . ")
-    const [leaveMessage, setLeaveMessage] = useState("Rozłącz się")
-    const [inChat,setInChat] = useState(false);
-    const [message, setMessage] = useState("")
-    const [modalStatePartner, setModalStatePartner] = useState(false)
-    const [modalStateEmpty, setModalStateEmpty] = useState(false)
-    const [partner,setPartner] = useState(false)
+    const [state, setState] = useState({
+        userCount: 0,
+        messages: [],
+        status: "Szukanie rozmówce. . .",
+        leaveMessage: "Rozłącz się",
+        inChat: false,
+        message: "",
+        modalStatePartner: false,
+        modalStateEmpty: false,
+        partner: false,
+    });
+
     function handleChange(event) {
-        setMessage(event.target.value);
+        setState(prevState => ({ ...prevState, message: event.target.value }));
     }
+
 
     function handleJoin() {
-        setInChat(true);
-        socket = new WebSocket('ws://localhost:8080/ws');
+        setState(prevState => ({ ...prevState, inChat: true }));
+        socket = createWebSocket();
 
-        socket.addEventListener('open', () => {
-            if (socket.readyState === WebSocket.OPEN) {
-                socket.send(JSON.stringify(new WsMessage("UserMessage", "FindPartner", "")));
-            }
-        });
-
-        socket.addEventListener('message', (event) => {
-            let data = JSON.parse(event.data);
-            if (data.MessageType === "SystemMessage") {
-                if (data.RequestType === "UpdateCount"){
-                    setUserCount(data.Contents)
-                }
-                if (data.Contents === "Found Partner") {
-                    setStatus("Rozpoczęto rozmowę z obcym.. przywitaj się, napisz „hej” :)");
-                    setPartner(true)
-                }
-            } else if (data.MessageType === "PartnerMessage") {
-                setMessages(prevMessages => [...prevMessages, <PMessage key={generateUniqueId()} message={data.Contents}></PMessage>]);
-            } else if (data.MessageType === "Error"){
-                if (data.Contents=== "Error! Partner Disconnected"){
-                    setModalStatePartner(true)
-                    setStatus("Zakończono rozmowe z obcym...");
-                    setPartner(false)
-                    setStatus("Szukanie rozmówce. . .")
-                }
-            }
-        });
-        socket.addEventListener("close", () => {
-            socket.send(JSON.stringify(new WsMessage("SystemMessage","Close","")));
-        });
-
+        setupSocketListeners(socket);
     }
+
+    function createWebSocket() {
+        const newSocket = new WebSocket('ws://localhost:8080/ws');
+        newSocket.addEventListener('open', () => {
+            if (newSocket.readyState === WebSocket.OPEN) {
+                newSocket.send(JSON.stringify(new WsMessage("UserMessage", "FindPartner", "")));
+            }
+        });
+        return newSocket;
+    }
+
+    function setupSocketListeners(socket) {
+        socket.addEventListener('message', handleMessage);
+        socket.addEventListener('close', handleClose);
+    }
+
+    function handleMessage(event) {
+        const data = JSON.parse(event.data);
+        if (data.MessageType === "SystemMessage") {
+            handleSystemMessage(data);
+        } else if (data.MessageType === "PartnerMessage") {
+            handlePartnerMessage(data);
+        } else if (data.MessageType === "Error") {
+            handleError(data);
+        }
+    }
+
+    function handleSystemMessage(data) {
+        setState(prevState => {
+            let newState = { ...prevState };
+
+            if (data.RequestType === "UpdateCount") {
+                newState.userCount = data.Contents;
+            }
+
+            if (data.Contents === "Found Partner") {
+                newState.status = "Rozpoczęto rozmowę z obcym.. przywitaj się, napisz „hej” :)";
+                newState.partner = true;
+            }
+
+            return newState;
+        });
+    }
+    function handlePartnerMessage(data) {
+        setState(prevState => ({
+            ...prevState,
+            messages: [...prevState.messages, <PMessage key={generateUniqueId()} message={data.Contents}></PMessage>],
+        }));
+    }
+
+
+
+    function handleError(data) {
+        if (data.Contents === "Error! Partner Disconnected") {
+            setState(prevState => ({
+                ...prevState,
+                modalStatePartner: true,
+                status: "Zakończono rozmowe z obcym...",
+                partner: false,
+            }));
+        }
+    }
+
+
+    function handleClose() {
+        socket.send(JSON.stringify(new WsMessage("SystemMessage", "Close", "")));
+    }
+
+
     function handleKeyDown(event) {
         switch (event.key) {
             case 'Enter':
@@ -82,50 +128,82 @@ function App() {
     }
 
     function handleEscapeKey() {
-        if (leaveMessage === "Rozłącz się") {
-            setLeaveMessage("Napewno?");
+        if (state.leaveMessage === "Rozłącz się") {
+            setState(prevState => ({ ...prevState, leaveMessage: "Napewno?" }));
         } else {
-            socket.send(JSON.stringify(new WsMessage("SystemMessage","Close","")));
-            socket.close()
-            setInChat(false)
-            setPartner(false)
+            socket.send(JSON.stringify(new WsMessage("SystemMessage", "Close", "")));
+            socket.close();
+
+            setState({
+                userCount: 0,
+                messages: [],
+                status: "Szukanie rozmówce. . .",
+                leaveMessage: "Rozłącz się",
+                inChat: false,
+                message: "",
+                modalStatePartner: false,
+                modalStateEmpty: false,
+                partner: false,
+            });
         }
     }
 
+    function closeEmptyModal() {
+        setState(prevState => ({ ...prevState, modalStateEmpty: false }));
+    }
 
-    function closeEmptyModal(){
-        setModalStateEmpty(false)
+    function closePartnerModal() {
+        setState({
+            userCount: 0,
+            messages: [],
+            status: "Szukanie rozmówce. . .",
+            leaveMessage: "Rozłącz się",
+            inChat: false,
+            message: "",
+            modalStatePartner: false,
+            modalStateEmpty: false,
+            partner: false,
+        });
+
+        handleJoin();
     }
 
 
     function handleSend() {
-        console.log(message)
-        //regex because it sends message with just enter in it
         const regex = /^[ \n]*$/;
-        if (regex.test(message)) {
-            setModalStateEmpty(true)
-            return
+
+        if (regex.test(state.message)) {
+            setState(prevState => ({ ...prevState, modalStateEmpty: true }));
+            return;
         }
 
-        setMessages(prevMessages => [...prevMessages, <UMessage key={generateUniqueId()} message={message}></UMessage>]);
-        setMessage("")
-        document.getElementById("main-input").value = ""
+        const newMessages = [...state.messages, <UMessage key={generateUniqueId()} message={state.message}></UMessage>];
+
+        setState(prevState => ({
+            ...prevState,
+            messages: newMessages,
+            message: "",
+        }));
+
+        document.getElementById("main-input").value = "";
+
         if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify(new WsMessage("UserMessage", "ToPartner", message)));
+            socket.send(JSON.stringify(new WsMessage("UserMessage", "ToPartner", state.message)));
         } else {
             console.error('WebSocket connection is not open.');
         }
     }
 
+
     return (
         <div>
-            <Header UserCount={userCount}></Header>
+            <Header UserCount={state.userCount}></Header>
             <br/>
             <div className="app-main-wrapper">
-                {inChat ? <div>
+                {state.inChat ? <div>
                         <div className="content-wrapper">
-                            <p style={{fontSize: '1.2em', fontWeight: 'bolder'}}>{status}</p>
-                            {messages.map((message, index) => (
+                            <p style={{fontSize: '1.2em', fontWeight: 'bolder'}}>{state.status}</p>
+                            {state.messages.map((message, index) => (
                                 <div key={index} className="content-item">
                                     {message}
                                 </div>
@@ -133,11 +211,11 @@ function App() {
                         </div>
                         <div className="input-wrapper">
                             <div className="button-wrapper" id="buttonLeave">
-                                <p>{leaveMessage}</p>
+                                <p>{state.leaveMessage}</p>
                                 <p style={{color: "#9E8F6D"}}>ESC</p>
                             </div>
                             <div className="text-input-wrapper">
-                                <textarea disabled={!partner} className="text-input" placeholder="Cześć..."
+                                <textarea disabled={!state.partner} className="text-input" placeholder="Cześć..."
                                           id="main-input" onKeyDown={handleKeyDown} onChange={handleChange}/>
 
                             </div>
@@ -173,12 +251,23 @@ function App() {
                 </div>}
             </div>
             {
-                modalStateEmpty ?
+               state.modalStateEmpty ?
                     <div className="modal-wrapper-empty">
                         <p>Nie można wysyłąć pustych wiadomości. Napisz coś :((</p>
                         <hr className="modal-line"/>
                         <div className="modal-button-wrapper">
                             <button className="modal-button" onClick={closeEmptyModal}>Ok</button>
+                        </div>
+                    </div> : null
+            }
+
+            {
+                state.modalStatePartner ?
+                    <div className="modal-wrapper-empty">
+                        <p>Obcy sie rozłączył :((</p>
+                        <hr className="modal-line"/>
+                        <div className="modal-button-wrapper">
+                            <button className="modal-button" onClick={closePartnerModal}>Ok</button>
                         </div>
                     </div> : null
             }
