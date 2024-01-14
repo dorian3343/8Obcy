@@ -10,10 +10,11 @@ type User struct {
 	Id        net.Addr
 	Conn      *websocket.Conn
 	PartnerId net.Addr
+	Key       int
 }
 
 func NewUser(conn *websocket.Conn) User {
-	return User{Conn: conn, Id: conn.RemoteAddr(), PartnerId: nil}
+	return User{Conn: conn, Id: conn.RemoteAddr(), PartnerId: nil, Key: 0}
 }
 
 type UserPool struct {

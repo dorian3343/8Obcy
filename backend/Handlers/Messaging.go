@@ -23,8 +23,8 @@ func ReportErrorById(id net.Addr, requestType string, Pool Types.UserPool, messa
 	user.Conn.Close()
 }
 
-func SendSystemMessage(user Types.User, message string) {
-	user.Conn.WriteJSON(Types.NewWsMessage("SystemMessage", "", message))
+func SendSystemMessage(user Types.User, requestType, message string) {
+	user.Conn.WriteJSON(Types.NewWsMessage("SystemMessage", requestType, message))
 }
 func SendPartnerMessage(user Types.User, message string, Pool Types.UserPool) {
 	var partner Types.User

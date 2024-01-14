@@ -10,6 +10,21 @@ function generateUniqueId() {
     return '_' + Math.random().toString(36).substr(2, 9);
 }
 
+function decrypt(ciphertext, key) {
+    let decryptedText = '';
+    for (let i = 0; i < ciphertext.length; i++) {
+        let charCode = ciphertext.charCodeAt(i);
+        if (ciphertext[i].match(/[a-zA-Z]/)) {
+            // Adjust the shift for uppercase and lowercase letters
+            let isUpperCase = ciphertext[i] === ciphertext[i].toUpperCase();
+            charCode = ((charCode - (isUpperCase ? 65 : 97) - key + 26) % 26) + (isUpperCase ? 65 : 97)-3;
+        }
+        decryptedText += String.fromCharCode(charCode);
+    }
+    return decryptedText;
+}
+
+
 
 function App() {
 
@@ -32,6 +47,7 @@ function App() {
         modalStatePartner: false,
         modalStateEmpty: false,
         partner: false,
+        key: 0
     });
 
     function handleChange(event) {
@@ -78,6 +94,8 @@ function App() {
 
             if (data.RequestType === "UpdateCount") {
                 newState.userCount = data.Contents;
+            } else if (data.RequestType === "SetEncKey") {
+                newState.key = data.Contents;
             }
 
             if (data.Contents === "Found Partner") {
@@ -88,10 +106,11 @@ function App() {
             return newState;
         });
     }
+
     function handlePartnerMessage(data) {
         setState(prevState => ({
             ...prevState,
-            messages: [...prevState.messages, <PMessage key={generateUniqueId()} message={data.Contents}></PMessage>],
+            messages: [...prevState.messages, <PMessage key={generateUniqueId()} message={decrypt(data.Contents,state.key)}></PMessage>],
         }));
     }
 
@@ -144,6 +163,7 @@ function App() {
                 modalStatePartner: false,
                 modalStateEmpty: false,
                 partner: false,
+                key: 0
             });
         }
     }
@@ -163,6 +183,7 @@ function App() {
             modalStatePartner: false,
             modalStateEmpty: false,
             partner: false,
+            key: 0
         });
 
         handleJoin();

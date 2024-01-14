@@ -2,8 +2,8 @@ package main
 
 import (
 	"backend/Handlers"
-	"backend/Logging"
 	"backend/Types"
+	"backend/Utils"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
@@ -12,7 +12,7 @@ import (
 )
 
 var Pool = Types.NewUserPool()
-var LogConf = Logging.Log_Config{Path: "main.log", TimeStamp: true}
+var LogConf = Utils.LogConfig{Path: "main.log", TimeStamp: true}
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -65,24 +65,33 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 					LogConf.Log("Starting Matching")
 					poolLength := len(Pool.Pool)
 					if poolLength%2 != 0 {
-						lastUser := Pool.Pool[poolLength-1]
-						fmt.Printf("Single user: %v\n", lastUser.Conn.RemoteAddr())
+						LogConf.Log("Uneven pool")
 					}
 					for i := 0; i < poolLength-1; i += 2 {
 						if Pool.Pool[i].PartnerId == nil && Pool.Pool[i] != &user {
 							user1 := Pool.Pool[i]
 							user1.PartnerId = user.Conn.RemoteAddr()
 							user.PartnerId = user1.Conn.RemoteAddr()
-							Handlers.SendSystemMessage(*user1, "Found Partner")
-							Handlers.SendSystemMessage(user, "Found Partner")
-							LogConf.Log("Match made")
+							Handlers.SendSystemMessage(*user1, "", "Found Partner")
+							Handlers.SendSystemMessage(user, "", "Found Partner")
+							LogConf.Log("Pair made")
+							key, _ := Utils.GenerateKey()
+							fmt.Println(key)
+							Handlers.SendSystemMessage(*user1, "SetEncKey", strconv.Itoa(key))
+							Handlers.SendSystemMessage(user, "SetEncKey", strconv.Itoa(key))
+							LogConf.Log("Key Assigned to pair")
 							break
 						}
 					}
 				}
 			} else if data.RequestType == "ToPartner" {
-				Handlers.SendPartnerMessage(user, data.Contents, Pool)
-				LogConf.Log("Sending message to partner")
+				mess := Utils.Encrypt(data.Contents, 3)
+				if err != nil {
+					fmt.Println(err)
+					LogConf.Log("Something went wrong while encrypting...")
+				}
+				Handlers.SendPartnerMessage(user, mess, Pool)
+				LogConf.Log("Sending encrypted message to partner")
 			} else {
 				Handlers.ReportError(user, "", "Unknown Request Type")
 				LogConf.Log("Recieved unknown request type for Message Type:User")
@@ -94,8 +103,9 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 				Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
 				Pool.RemoveById(user.PartnerId)
 				Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
-				return
 				LogConf.Log("Disconnecting pair")
+				return
+
 			} else {
 				Handlers.ReportError(user, "", "Unknown Request Type")
 				LogConf.Log("Recieved unknown request type for Message Type:System")
