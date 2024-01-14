@@ -22,11 +22,12 @@ function App() {
     const [userCount, setUserCount] = useState(0)
     const [messages, setMessages] = useState([])
     const [status,setStatus] = useState("Szukanie rozmówce. . . ")
+    const [leaveMessage, setLeaveMessage] = useState("Rozłącz się")
     const [inChat,setInChat] = useState(false);
     const [message, setMessage] = useState("")
     const [modalStatePartner, setModalStatePartner] = useState(false)
     const [modalStateEmpty, setModalStateEmpty] = useState(false)
-
+    const [partner,setPartner] = useState(false)
     function handleChange(event) {
         setMessage(event.target.value);
     }
@@ -49,6 +50,7 @@ function App() {
                 }
                 if (data.Contents === "Found Partner") {
                     setStatus("Rozpoczęto rozmowę z obcym.. przywitaj się, napisz „hej” :)");
+                    setPartner(true)
                 }
             } else if (data.MessageType === "PartnerMessage") {
                 setMessages(prevMessages => [...prevMessages, <PMessage key={generateUniqueId()} message={data.Contents}></PMessage>]);
@@ -56,6 +58,8 @@ function App() {
                 if (data.Contents=== "Error! Partner Disconnected"){
                     setModalStatePartner(true)
                     setStatus("Zakończono rozmowe z obcym...");
+                    setPartner(false)
+                    setStatus("Szukanie rozmówce. . .")
                 }
             }
         });
@@ -64,11 +68,30 @@ function App() {
         });
 
     }
-    function handleKeyDown(event){
-        if (event.key === 'Enter') {
-            handleSend();
+    function handleKeyDown(event) {
+        switch (event.key) {
+            case 'Enter':
+                handleSend();
+                break;
+            case 'Escape':
+                handleEscapeKey();
+                break;
+            default:
+                break;
         }
-    };
+    }
+
+    function handleEscapeKey() {
+        if (leaveMessage === "Rozłącz się") {
+            setLeaveMessage("Napewno?");
+        } else {
+            socket.send(JSON.stringify(new WsMessage("SystemMessage","Close","")));
+            socket.close()
+            setInChat(false)
+            setPartner(false)
+        }
+    }
+
 
     function closeEmptyModal(){
         setModalStateEmpty(false)
@@ -110,11 +133,13 @@ function App() {
                         </div>
                         <div className="input-wrapper">
                             <div className="button-wrapper" id="buttonLeave">
-                                <p>Rozłącz sie</p>
+                                <p>{leaveMessage}</p>
                                 <p style={{color: "#9E8F6D"}}>ESC</p>
                             </div>
                             <div className="text-input-wrapper">
-                                <textarea  className="text-input" placeholder="Cześć..." id="main-input"  onKeyDown={handleKeyDown} onChange={handleChange}/>
+                                <textarea disabled={!partner} className="text-input" placeholder="Cześć..."
+                                          id="main-input" onKeyDown={handleKeyDown} onChange={handleChange}/>
+
                             </div>
                             <div className="button-wrapper" id="buttonSend" onClick={handleSend}>
                                 <p>Wyślij wiadomość</p>
