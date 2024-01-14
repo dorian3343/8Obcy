@@ -33,21 +33,17 @@ func (u_p *UserPool) Remove(user User) {
 	for i := 0; i < len(u_p.Pool); i++ {
 		if u_p.Pool[i].Id == user.Id {
 			u_p.Pool = append(u_p.Pool[:i], u_p.Pool[i+1:]...)
-			fmt.Println(u_p)
 			return
 		}
 	}
 }
 func (u_p *UserPool) RemoveById(id net.Addr) {
 	if id == nil {
-		fmt.Println("brruh")
 		return
 	}
-	fmt.Println(u_p)
 	for i := 0; i < len(u_p.Pool); i++ {
 		if u_p.Pool[i].Id == id {
 			u_p.Pool = append(u_p.Pool[:i], u_p.Pool[i+1:]...)
-			fmt.Println(u_p)
 			return
 		}
 	}
