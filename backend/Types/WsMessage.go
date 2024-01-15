@@ -7,7 +7,6 @@ type WsMessage struct {
 	Contents    string
 }
 
-// NewWsMessage creates a new instance of WsMessage.
 func NewWsMessage(messageType string, requestType string, contents string) *WsMessage {
 	return &WsMessage{
 		MessageType: messageType,
