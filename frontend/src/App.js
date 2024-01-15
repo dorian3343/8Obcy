@@ -3,31 +3,13 @@ import Header from "./Components/header/header";
 import UMessage from "./Components/message/uMessage";
 import PMessage from "./Components/message/pMessage";
 import './App.css'
-import WsMessage from "./ws/template";
+import decrypt from "./Utils/decrypt";
+import WsMessage from "./Ws/template";
+import generateUniqueId from "./Utils/generateId";
 let socket;
-
-function generateUniqueId() {
-    return '_' + Math.random().toString(36).substr(2, 9);
-}
-
-function decrypt(ciphertext, key) {
-    let decryptedText = '';
-    for (let i = 0; i < ciphertext.length; i++) {
-        let charCode = ciphertext.charCodeAt(i);
-        if (ciphertext[i].match(/[a-zA-Z]/)) {
-            // Adjust the shift for uppercase and lowercase letters
-            let isUpperCase = ciphertext[i] === ciphertext[i].toUpperCase();
-            charCode = ((charCode - (isUpperCase ? 65 : 97) - key + 26) % 26) + (isUpperCase ? 65 : 97)-3;
-        }
-        decryptedText += String.fromCharCode(charCode);
-    }
-    return decryptedText;
-}
-
 
 
 function App() {
-
     useEffect(() => {
         fetch('http://localhost:8080/count')
             .then((response) => response.json())
