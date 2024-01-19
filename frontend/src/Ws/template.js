@@ -1,4 +1,4 @@
-//Standard for sending messages on ws
+//Standard for sending messages on Ws
 
 class WsMessage {
     constructor(messageType,requestType,contents) {

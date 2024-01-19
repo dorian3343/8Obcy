@@ -10,37 +10,62 @@ let socket;
 
 
 function App() {
+    function resetStates() {
+        setKey(0);
+        setUserCount(0);
+        setModalStates({
+            modalStatePartner: false,
+            modalStateEmpty: false,
+        });
+        setChatStates({
+            status: "Szukanie rozmówce. . .",
+            withPartner: false,
+            inChat: false,
+        });
+        setMessageStates({
+            messages: [],
+            message: "",
+            leaveMessage: "Rozłącz się",
+        });
+    };
+
     useEffect(() => {
         fetch('http://localhost:8080/count')
             .then((response) => response.json())
             .then((json) => {
-                setState(prevState => ({ ...prevState, userCount: json.Count }));
+                setUserCount(json.Count)
             });
     }, []);
 
+    //Key for decrypting messages
+    const [getKey, setKey] = useState(0)
 
-    const [state, setState] = useState({
-        userCount: 0,
-        messages: [],
-        status: "Szukanie rozmówce. . .",
-        leaveMessage: "Rozłącz się",
-        inChat: false,
-        message: "",
+    const [getUserCount,setUserCount] = useState(0)
+
+    const [getModalStates, setModalStates] = useState({
         modalStatePartner: false,
         modalStateEmpty: false,
-        partner: false,
-        key: 0
-    });
+    })
+    const [getChatStates,setChatStates] = useState({
+        status: "Szukanie rozmówce. . .",
+        withPartner: false,
+        inChat: false,
+    })
+    const [getMessageStates,setMessageStates] = useState({
+        messages: [],
+        message: "",
+        leaveMessage: "Rozłącz się",
+    })
 
     function handleChange(event) {
-        setState(prevState => ({ ...prevState, message: event.target.value }));
+        setMessageStates(prevState => ({ ...prevState, message: event.target.value }));
     }
 
 
     function handleJoin() {
-        setState(prevState => ({ ...prevState, inChat: true }));
-        socket = createWebSocket();
+        setChatStates(prevState => ({ ...prevState, inChat: true }));
 
+        socket = createWebSocket();
         setupSocketListeners(socket);
     }
 
@@ -69,30 +94,24 @@ function App() {
             handleError(data);
         }
     }
-
     function handleSystemMessage(data) {
-        setState(prevState => {
-            let newState = { ...prevState };
-
             if (data.RequestType === "UpdateCount") {
-                newState.userCount = data.Contents;
+                setUserCount(data.Contents)
             } else if (data.RequestType === "SetEncKey") {
-                newState.key = data.Contents;
+                 setKey(data.Contents);
             }
 
             if (data.Contents === "Found Partner") {
-                newState.status = "Rozpoczęto rozmowę z obcym.. przywitaj się, napisz „hej” :)";
-                newState.partner = true;
+                setChatStates(prevState => ({ ...prevState,
+                    status: "Rozpoczęto rozmowę z obcym.. przywitaj się, napisz „hej” :)",
+                    withPartner: true }));
             }
-
-            return newState;
-        });
     }
 
     function handlePartnerMessage(data) {
-        setState(prevState => ({
+        setMessageStates(prevState => ({
             ...prevState,
-            messages: [...prevState.messages, <PMessage key={generateUniqueId()} message={decrypt(data.Contents,state.key)}></PMessage>],
+            messages: [...prevState.messages, <PMessage key={generateUniqueId()} message={decrypt(data.Contents,getKey)}></PMessage>],
         }));
     }
 
@@ -100,11 +119,15 @@ function App() {
 
     function handleError(data) {
         if (data.Contents === "Error! Partner Disconnected") {
-            setState(prevState => ({
+
+            setModalStates(prevState => ({
                 ...prevState,
                 modalStatePartner: true,
+            }));
+            setChatStates(prevState => ({
+                ...prevState,
                 status: "Zakończono rozmowe z obcym...",
-                partner: false,
+                withPartner: false,
             }));
         }
     }
@@ -129,45 +152,21 @@ function App() {
     }
 
     function handleEscapeKey() {
-        if (state.leaveMessage === "Rozłącz się") {
-            setState(prevState => ({ ...prevState, leaveMessage: "Napewno?" }));
+        if (getMessageStates.leaveMessage === "Rozłącz się") {
+            setMessageStates(prevState => ({ ...prevState, leaveMessage: "Napewno?" }));
         } else {
             socket.send(JSON.stringify(new WsMessage("SystemMessage", "Close", "")));
             socket.close();
-
-            setState({
-                userCount: 0,
-                messages: [],
-                status: "Szukanie rozmówce. . .",
-                leaveMessage: "Rozłącz się",
-                inChat: false,
-                message: "",
-                modalStatePartner: false,
-                modalStateEmpty: false,
-                partner: false,
-                key: 0
-            });
+            resetStates()
         }
     }
 
     function closeEmptyModal() {
-        setState(prevState => ({ ...prevState, modalStateEmpty: false }));
+        setModalStates(prevState => ({ ...prevState, modalStateEmpty: false }));
     }
 
     function closePartnerModal() {
-        setState({
-            userCount: 0,
-            messages: [],
-            status: "Szukanie rozmówce. . .",
-            leaveMessage: "Rozłącz się",
-            inChat: false,
-            message: "",
-            modalStatePartner: false,
-            modalStateEmpty: false,
-            partner: false,
-            key: 0
-        });
-
+        resetStates()
         handleJoin();
     }
 
@@ -175,14 +174,14 @@ function App() {
     function handleSend() {
         const regex = /^[ \n]*$/;
 
-        if (regex.test(state.message)) {
-            setState(prevState => ({ ...prevState, modalStateEmpty: true }));
+        if (regex.test(getMessageStates.message)) {
+            setModalStates(prevState => ({ ...prevState, modalStateEmpty: true }));
             return;
         }
 
-        const newMessages = [...state.messages, <UMessage key={generateUniqueId()} message={state.message}></UMessage>];
+        const newMessages = [...getMessageStates.messages, <UMessage key={generateUniqueId()} message={getMessageStates.message}></UMessage>];
 
-        setState(prevState => ({
+        setMessageStates(prevState => ({
             ...prevState,
             messages: newMessages,
             message: "",
@@ -191,7 +190,7 @@ function App() {
         document.getElementById("main-input").value = "";
 
         if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify(new WsMessage("UserMessage", "ToPartner", state.message)));
+            socket.send(JSON.stringify(new WsMessage("UserMessage", "ToPartner", getMessageStates.message)));
         } else {
             console.error('WebSocket connection is not open.');
         }
@@ -200,13 +199,13 @@ function App() {
 
     return (
         <div>
-            <Header UserCount={state.userCount}></Header>
+            <Header UserCount={getUserCount}></Header>
             <br/>
             <div className="app-main-wrapper">
-                {state.inChat ? <div>
+                {getChatStates.inChat ? <div>
                         <div className="content-wrapper">
-                            <p style={{fontSize: '1.2em', fontWeight: 'bolder'}}>{state.status}</p>
-                            {state.messages.map((message, index) => (
+                            <p style={{fontSize: '1.2em', fontWeight: 'bolder'}}>{getChatStates.status}</p>
+                            {getMessageStates.messages.map((message, index) => (
                                 <div key={index} className="content-item">
                                     {message}
                                 </div>
@@ -214,11 +213,11 @@ function App() {
                         </div>
                         <div className="input-wrapper">
                             <div className="button-wrapper" id="buttonLeave">
-                                <p>{state.leaveMessage}</p>
+                                <p>{getMessageStates.leaveMessage}</p>
                                 <p style={{color: "#9E8F6D"}}>ESC</p>
                             </div>
                             <div className="text-input-wrapper">
-                                <textarea disabled={!state.partner} className="text-input" placeholder="Cześć..."
+                                <textarea disabled={!getChatStates.withPartner} className="text-input" placeholder="Cześć..."
                                           id="main-input" onKeyDown={handleKeyDown} onChange={handleChange}/>
 
                             </div>
@@ -254,7 +253,7 @@ function App() {
                 </div>}
             </div>
             {
-               state.modalStateEmpty ?
+               getModalStates.modalStateEmpty ?
                     <div className="modal-wrapper-empty">
                         <p>Nie można wysyłąć pustych wiadomości. Napisz coś :((</p>
                         <hr className="modal-line"/>
@@ -265,7 +264,7 @@ function App() {
             }
 
             {
-                state.modalStatePartner ?
+                getModalStates.modalStatePartner ?
                     <div className="modal-wrapper-empty">
                         <p>Obcy sie rozłączył :((</p>
                         <hr className="modal-line"/>
