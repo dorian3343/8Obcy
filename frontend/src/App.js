@@ -11,33 +11,6 @@ let socket;
 
 
 function App() {
-    function resetStates() {
-        setKey(0);
-        setUserCount(0);
-        setModalStates({
-            modalStatePartner: false,
-            modalStateEmpty: false,
-        });
-        setChatStates({
-            status: "Szukanie rozmówce. . .",
-            withPartner: false,
-            inChat: false,
-        });
-        setMessageStates({
-            messages: [],
-            message: "",
-            leaveMessage: "Rozłącz się",
-        });
-    };
-
-    useEffect(() => {
-        fetch('http://localhost:8080/count')
-            .then((response) => response.json())
-            .then((json) => {
-                setUserCount(json.Count)
-            });
-    }, []);
-
     //Key for decrypting messages
     const [getKey, setKey] = useState(0)
 
@@ -57,6 +30,43 @@ function App() {
         message: "",
         leaveMessage: "Rozłącz się",
     })
+
+
+    function resetStates() {
+        setKey(0);
+        setUserCount(0);
+        setModalStates({
+            modalStatePartner: false,
+            modalStateEmpty: false,
+        });
+        setChatStates({
+            status: "Szukanie rozmówce. . .",
+            withPartner: false,
+            inChat: false,
+        });
+        setMessageStates({
+            messages: [],
+            message: "",
+            leaveMessage: "Rozłącz się",
+        });
+    };
+
+    //Focus the text input on start
+    useEffect(() => {
+        if (getChatStates.withPartner) {
+            document.getElementById("main-input").focus()
+        }
+    }, [getChatStates.withPartner]);
+
+    useEffect(() => {
+        fetch('http://localhost:8080/count')
+            .then((response) => response.json())
+            .then((json) => {
+                setUserCount(json.Count)
+            });
+    }, [setUserCount]);
+
+
 
     function handleChange(event) {
         setMessageStates(prevState => ({ ...prevState, message: event.target.value }));
@@ -106,6 +116,7 @@ function App() {
                 setChatStates(prevState => ({ ...prevState,
                     status: "Rozpoczęto rozmowę z obcym.. przywitaj się, napisz „hej” :)",
                     withPartner: true }));
+                document.getElementById("main-input").focus()
             }
     }
 
@@ -143,6 +154,7 @@ function App() {
         switch (event.key) {
             case 'Enter':
                 handleSend();
+                document.getElementById("main-input").blur();
                 break;
             case 'Escape':
                 handleEscapeKey();
