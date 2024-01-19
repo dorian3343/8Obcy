@@ -1,0 +1,11 @@
+.content-wrapper {
+    background-color: #3C3F42;
+    width: 1500px;
+    height: 700px;
+    border-radius: 0.6em 0.6em 0 0;
+    border: 2px solid #444;
+    box-shadow: 0 4px 5px -2px black;
+    padding: 10px;
+    margin-bottom: 3px;
+    overflow-y: scroll;
+}

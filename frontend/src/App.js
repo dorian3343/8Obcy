@@ -6,6 +6,7 @@ import './App.css'
 import decrypt from "./Utils/decrypt";
 import WsMessage from "./Ws/template";
 import generateUniqueId from "./Utils/generateId";
+import Chat from "./Components/chat/chat";
 let socket;
 
 
@@ -203,13 +204,8 @@ function App() {
             <br/>
             <div className="app-main-wrapper">
                 {getChatStates.inChat ? <div>
-                        <div className="content-wrapper">
-                            <p style={{fontSize: '1.2em', fontWeight: 'bolder'}}>{getChatStates.status}</p>
-                            {getMessageStates.messages.map((message, index) => (
-                                <div key={index} className="content-item">
-                                    {message}
-                                </div>
-                            ))}
+                        <div>
+                            <Chat chatStatus={getChatStates.status} messages={getMessageStates.messages} />
                         </div>
                         <div className="input-wrapper">
                             <div className="button-wrapper" id="buttonLeave">
