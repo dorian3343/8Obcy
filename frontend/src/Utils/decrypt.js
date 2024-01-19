@@ -1,4 +1,4 @@
-
+//Used to decrypt ceaser ciphers
 function decrypt(ciphertext, key) {
     let decryptedText = '';
     for (let i = 0; i < ciphertext.length; i++) {
