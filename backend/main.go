@@ -92,6 +92,9 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 				}
 				Handlers.SendPartnerMessage(user, mess, Pool)
 				LogConf.Log("Sending encrypted message to partner")
+			} else if data.RequestType == "Typing" {
+				Handlers.SendSystemMessageToPartner(user, "PartnerTyping", "", Pool)
+				LogConf.Log("Sending Typing  to partner")
 			} else {
 				Handlers.ReportError(user, "", "Unknown Request Type")
 				LogConf.Log("Recieved unknown request type for Message Type:User")

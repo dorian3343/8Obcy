@@ -26,6 +26,23 @@ func ReportErrorById(id net.Addr, requestType string, Pool Types.UserPool, messa
 func SendSystemMessage(user Types.User, requestType, message string) {
 	user.Conn.WriteJSON(Types.NewWsMessage("SystemMessage", requestType, message))
 }
+
+func SendSystemMessageToPartner(user Types.User, requestType, message string, Pool Types.UserPool) {
+	var partner Types.User
+	for i := 0; i < len(Pool.Pool); i++ {
+		if Pool.Pool[i].Id == user.PartnerId {
+			partner = *Pool.Pool[i]
+			break
+		}
+	}
+
+	if partner.Conn == nil {
+		fmt.Println("Partner not connected.")
+		return
+	}
+
+	partner.Conn.WriteJSON(Types.NewWsMessage("SystemMessage", requestType, message))
+}
 func SendPartnerMessage(user Types.User, message string, Pool Types.UserPool) {
 	var partner Types.User
 	for i := 0; i < len(Pool.Pool); i++ {

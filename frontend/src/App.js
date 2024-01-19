@@ -11,6 +11,9 @@ let socket;
 
 
 function App() {
+    //Variable to control the typing popup
+    let initialTimeoutDuration = 1000;
+
     //Key for decrypting messages
     const [getKey, setKey] = useState(0)
 
@@ -19,6 +22,7 @@ function App() {
     const [getModalStates, setModalStates] = useState({
         modalStatePartner: false,
         modalStateEmpty: false,
+        popupPartnerTyping: false,
     })
     const [getChatStates,setChatStates] = useState({
         status: "Szukanie rozmówce. . .",
@@ -38,6 +42,7 @@ function App() {
         setModalStates({
             modalStatePartner: false,
             modalStateEmpty: false,
+            popupPartnerTyping: false,
         });
         setChatStates({
             status: "Szukanie rozmówce. . .",
@@ -110,6 +115,20 @@ function App() {
                 setUserCount(data.Contents)
             } else if (data.RequestType === "SetEncKey") {
                  setKey(data.Contents);
+            }else if (data.RequestType === "PartnerTyping") {
+                setModalStates(prevState => ({
+                    ...prevState,
+                    popupPartnerTyping: true,
+                }));
+
+                let timeoutId = setTimeout(() => {
+                    setModalStates(prevState => ({
+                        ...prevState,
+                        popupPartnerTyping: false,
+                    }));
+                }, initialTimeoutDuration);
+
+                initialTimeoutDuration += 3000;
             }
 
             if (data.Contents === "Found Partner") {
@@ -160,6 +179,9 @@ function App() {
                 handleEscapeKey();
                 break;
             default:
+                if (socket != undefined){
+                    socket.send(JSON.stringify(new WsMessage("UserMessage", "Typing", "")));
+                }
                 break;
         }
     }
@@ -217,7 +239,7 @@ function App() {
             <div className="app-main-wrapper">
                 {getChatStates.inChat ? <div>
                         <div>
-                            <Chat chatStatus={getChatStates.status} messages={getMessageStates.messages} />
+                            <Chat chatStatus={getChatStates.status} messages={getMessageStates.messages} showTyping={getModalStates.popupPartnerTyping}/>
                         </div>
                         <div className="input-wrapper">
                             <div className="button-wrapper" id="buttonLeave">

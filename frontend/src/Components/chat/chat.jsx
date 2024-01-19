@@ -1,13 +1,17 @@
-import './chat.css'
-function Chat({chatStatus,messages}){
+import './chat.css';
+
+function Chat({ chatStatus, messages, showTyping }) {
     return (
         <div className="content-wrapper">
-            <p style={{ fontSize: '1.2em', fontWeight: 'bolder' }}>{chatStatus}</p>
-            {messages.map((message, index) => (
-                <div key={index} className="content-item">
-                    {message}
-                </div>
-            ))}
+            <div className="messages-wrapper">
+                <p>{chatStatus}</p>
+                {messages.map((message, index) => (
+                    <div key={index} className="content-item">
+                        {message}
+                    </div>
+                ))}
+            </div>
+            {showTyping ? <p className="typing-indicator">Obcy pisze...</p> : null}
         </div>
     );
 }

@@ -1,4 +1,6 @@
 .content-wrapper {
+    display: flex;
+    flex-direction: column;
     background-color: #3C3F42;
     width: 1500px;
     height: 700px;
@@ -8,4 +10,17 @@
     padding: 10px;
     margin-bottom: 3px;
     overflow-y: scroll;
+}
+
+.messages-wrapper {
+    flex: 1;
+}
+
+.content-wrapper p {
+    font-size: 1.2em;
+    font-weight: bolder;
+}
+
+.typing-indicator {
+    align-self: flex-start;
 }
