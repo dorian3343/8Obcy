@@ -8,11 +8,10 @@ import WsMessage from "./Ws/template";
 import generateUniqueId from "./Utils/generateId";
 import Chat from "./Components/chat/chat";
 let socket;
+//Variable to control the typing popup
+let initialTimeoutDuration = 1000;
 
 function App() {
-    //Variable to control the typing popup
-    let initialTimeoutDuration = 1000;
-
 
     const [getUserCount,setUserCount] = useState(0)
 
@@ -20,6 +19,7 @@ function App() {
         modalStatePartner: false,
         modalStateEmpty: false,
         popupPartnerTyping: false,
+        modalStateError:false,
     })
     const [getChatStates,setChatStates] = useState({
         status: "Szukanie rozmówce. . .",
@@ -32,13 +32,13 @@ function App() {
         leaveMessage: "Rozłącz się",
     })
 
-
     function resetStates() {
         setUserCount(0);
         setModalStates({
             modalStatePartner: false,
             modalStateEmpty: false,
             popupPartnerTyping: false,
+            modalStateError:false,
         });
         setChatStates({
             status: "Szukanie rozmówce. . .",
@@ -58,7 +58,7 @@ function App() {
             document.getElementById("main-input").focus()
         }
     }, [getChatStates.withPartner]);
-
+    //Get user count before switching to ws
     useEffect(() => {
         fetch('http://localhost:4200/count')
             .then((response) => response.json())
@@ -136,14 +136,12 @@ function App() {
                     ...prevState,
                     popupPartnerTyping: true,
                 }));
-
-                let timeoutId = setTimeout(() => {
+                setTimeout(() => {
                     setModalStates(prevState => ({
                         ...prevState,
                         popupPartnerTyping: false,
                     }));
                 }, initialTimeoutDuration);
-
                 initialTimeoutDuration += 3000;
             }
 
@@ -160,7 +158,7 @@ function App() {
     function handlePartnerMessage(data) {
         const AES = sessionStorage.getItem('AESKey');
         if (AES) {
-            var decryptedMessage = CryptoJS.AES.decrypt(data.Contents,AES).toString(CryptoJS.enc.Utf8);
+            const decryptedMessage = CryptoJS.AES.decrypt(data.Contents, AES).toString(CryptoJS.enc.Utf8);
             setMessageStates((prevState) => ({
                 ...prevState,
                 messages: [
@@ -206,7 +204,7 @@ function App() {
                 handleEscapeKey();
                 break;
             default:
-                if (socket != undefined){
+                if (socket !== undefined){
                     socket.send(JSON.stringify(new WsMessage("UserMessage", "Typing", "")));
                 }
                 break;
@@ -226,12 +224,14 @@ function App() {
     function closeEmptyModal() {
         setModalStates(prevState => ({ ...prevState, modalStateEmpty: false }));
     }
+    function closeErrorModal() {
+        setModalStates(prevState => ({ ...prevState, modalStateError: false }));
+    }
 
     function closePartnerModal() {
         resetStates()
         handleJoin();
     }
-
 
     function handleSend() {
         const regex = /^[ \n]*$/;
@@ -262,7 +262,11 @@ function App() {
             }
 
         } else {
-            console.error('WebSocket connection is not open.');
+           resetStates()
+            setModalStates(prevState => ({
+                ...prevState,
+                modalStateError: true,
+            }));
         }
     }
 
@@ -335,6 +339,18 @@ function App() {
                         <hr className="modal-line"/>
                         <div className="modal-button-wrapper">
                             <button className="modal-button" onClick={closePartnerModal}>Ok</button>
+                        </div>
+                    </div> : null
+            }
+
+            {
+                getModalStates.modalStateError ?
+                    <div className="modal-wrapper-empty">
+                        <p>Coś poszło nie tak po naszej stronie!</p>
+                        <p>Przepraszamy :(</p>
+                        <hr className="modal-line"/>
+                        <div className="modal-button-wrapper">
+                            <button className="modal-button" onClick={closeErrorModal}>Ok</button>
                         </div>
                     </div> : null
             }
