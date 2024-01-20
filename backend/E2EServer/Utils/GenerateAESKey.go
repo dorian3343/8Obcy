@@ -1,15 +1,18 @@
 package Utils
 
 import (
-	"crypto/rand"
-	"io"
+	"crypto/sha256"
+	"encoding/base64"
 )
 
-func generateAESKey() ([]byte, error) {
-	key := make([]byte, 32)
-	_, err := io.ReadFull(rand.Reader, key)
-	if err != nil {
-		return nil, err
-	}
-	return key, nil
+func GenerateAESKey(input string) (string, error) {
+	// Use SHA-256 hash to produce a consistent output for the given input
+	hash := sha256.New()
+	hash.Write([]byte(input))
+	hashedInput := hash.Sum(nil)
+
+	// Ensure the hashed string is exactly 32 bytes by trimming any extra padding
+	hashedString := base64.StdEncoding.EncodeToString(hashedInput)[:32]
+
+	return hashedString, nil
 }

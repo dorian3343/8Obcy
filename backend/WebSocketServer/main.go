@@ -1,9 +1,9 @@
 package main
 
 import (
-	"backend/Handlers"
-	"backend/Types"
-	"backend/Utils"
+	"WebSocketServer/Handlers"
+	"WebSocketServer/Types"
+	"WebSocketServer/Utils"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
@@ -72,26 +72,27 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 							user1 := Pool.Pool[i]
 							user1.PartnerId = user.Conn.RemoteAddr()
 							user.PartnerId = user1.Conn.RemoteAddr()
+							key, err := Utils.GenerateKey()
+							if err != nil {
+								fmt.Println(err)
+								LogConf.Log("Error while generating Key")
+								return
+							}
+							user.Key = key
+							user1.Key = key
 							Handlers.SendSystemMessage(*user1, "", "Found Partner")
 							Handlers.SendSystemMessage(user, "", "Found Partner")
-							LogConf.Log("Pair made")
-							key, _ := Utils.GenerateKey()
-							fmt.Println(key)
-							Handlers.SendSystemMessage(*user1, "SetEncKey", strconv.Itoa(key))
-							Handlers.SendSystemMessage(user, "SetEncKey", strconv.Itoa(key))
-							LogConf.Log("Key Assigned to pair")
+							Handlers.SendSystemMessage(*user1, "SetEncKey", key)
+							Handlers.SendSystemMessage(user, "SetEncKey", key)
+							LogConf.Log("Pair made + Key's assigned")
 							break
 						}
 					}
 				}
 			} else if data.RequestType == "ToPartner" {
-				mess := Utils.Encrypt(data.Contents, 3)
-				if err != nil {
-					fmt.Println(err)
-					LogConf.Log("Something went wrong while encrypting...")
-				}
-				Handlers.SendPartnerMessage(user, mess, Pool)
-				LogConf.Log("Sending encrypted message to partner")
+
+				Handlers.SendPartnerMessage(user, data.Contents, Pool)
+				LogConf.Log("Sending  message to partner")
 			} else if data.RequestType == "Typing" {
 				Handlers.SendSystemMessageToPartner(user, "PartnerTyping", "", Pool)
 				LogConf.Log("Sending Typing  to partner")
@@ -124,7 +125,7 @@ func main() {
 	http.HandleFunc("/ws", handleWebSocket)
 	http.HandleFunc("/count", Handlers.HandleUserCount(&Pool))
 
-	port := 8080
+	port := 4200
 	LogConf.Log("Server Boot . . .")
 	fmt.Printf("WebSocket server is listening on :%d...\n", port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)

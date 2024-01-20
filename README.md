@@ -8,7 +8,7 @@
 ## Features
 ```
 -Complete anonynimity between Users.
--Message Ciphering
+-E2E Encryption
 -Easy Deploy
 ```
 ---
@@ -20,20 +20,14 @@ Backend:
 -Golang
 ```
 ---
-## How to start 
-(Anything in quotation marks is a command)
+## How to start
 
 ```
-1.Frontend
-    a.Open the project
-    b."cd frontend"
-    c."npm install" (this can take a while)
-    d."npm start"
-2.Backend
-    a.Open the project
-    b."cd backend"
-    c."go run main.go" 
-2.Browser
-    a.Open your favourite browser
-    b.Open http://localhost:3000
+Initial setup:
+- Enter the project directory
+- Run the command "cd frontend"
+- Run the command "npm install" (this may take a while)
+- run the file 'start.bat'
+
+After this you just run the start.bat file to deploy the Application
 ```

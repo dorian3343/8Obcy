@@ -1,7 +1,7 @@
 package Handlers
 
 import (
-	"backend/Types"
+	"WebSocketServer/Types"
 	"encoding/json"
 	"net/http"
 )

@@ -1,4 +1,4 @@
-module backend
+module WebSocketServer
 
 go 1.21.6
 
