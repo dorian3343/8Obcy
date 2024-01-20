@@ -1,21 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import Header from "./Components/header/header";
 import UMessage from "./Components/message/uMessage";
+import CryptoJS from "crypto-js";
 import PMessage from "./Components/message/pMessage";
 import './App.css'
-import decrypt from "./Utils/decrypt";
 import WsMessage from "./Ws/template";
 import generateUniqueId from "./Utils/generateId";
 import Chat from "./Components/chat/chat";
 let socket;
 
-
 function App() {
     //Variable to control the typing popup
     let initialTimeoutDuration = 1000;
 
-    //Key for decrypting messages
-    const [getKey, setKey] = useState(0)
 
     const [getUserCount,setUserCount] = useState(0)
 
@@ -37,7 +34,6 @@ function App() {
 
 
     function resetStates() {
-        setKey(0);
         setUserCount(0);
         setModalStates({
             modalStatePartner: false,
@@ -64,7 +60,7 @@ function App() {
     }, [getChatStates.withPartner]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/count')
+        fetch('http://localhost:4200/count')
             .then((response) => response.json())
             .then((json) => {
                 setUserCount(json.Count)
@@ -86,7 +82,7 @@ function App() {
     }
 
     function createWebSocket() {
-        const newSocket = new WebSocket('ws://localhost:8080/ws');
+        const newSocket = new WebSocket('ws://localhost:4200/ws');
         newSocket.addEventListener('open', () => {
             if (newSocket.readyState === WebSocket.OPEN) {
                 newSocket.send(JSON.stringify(new WsMessage("UserMessage", "FindPartner", "")));
@@ -114,7 +110,27 @@ function App() {
             if (data.RequestType === "UpdateCount") {
                 setUserCount(data.Contents)
             } else if (data.RequestType === "SetEncKey") {
-                 setKey(data.Contents);
+                fetch('http://localhost:3069/assign', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ key: data.Contents }),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        sessionStorage.setItem('AESKey', data.aes_key);
+
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        resetStates()
+                    });
             }else if (data.RequestType === "PartnerTyping") {
                 setModalStates(prevState => ({
                     ...prevState,
@@ -132,25 +148,35 @@ function App() {
             }
 
             if (data.Contents === "Found Partner") {
+
                 setChatStates(prevState => ({ ...prevState,
                     status: "Rozpoczęto rozmowę z obcym.. przywitaj się, napisz „hej” :)",
                     withPartner: true }));
                 document.getElementById("main-input").focus()
+
             }
     }
 
     function handlePartnerMessage(data) {
-        setMessageStates(prevState => ({
-            ...prevState,
-            messages: [...prevState.messages, <PMessage key={generateUniqueId()} message={decrypt(data.Contents,getKey)}></PMessage>],
-        }));
+        const AES = sessionStorage.getItem('AESKey');
+        if (AES) {
+            var decryptedMessage = CryptoJS.AES.decrypt(data.Contents,AES).toString(CryptoJS.enc.Utf8);
+            setMessageStates((prevState) => ({
+                ...prevState,
+                messages: [
+                    ...prevState.messages,
+                    <PMessage key={generateUniqueId()} message={decryptedMessage}></PMessage>,
+                ],
+            }));
+        }
     }
+
 
 
 
     function handleError(data) {
         if (data.Contents === "Error! Partner Disconnected") {
-
+            sessionStorage.clear()
             setModalStates(prevState => ({
                 ...prevState,
                 modalStatePartner: true,
@@ -165,6 +191,7 @@ function App() {
 
 
     function handleClose() {
+        sessionStorage.clear()
         socket.send(JSON.stringify(new WsMessage("SystemMessage", "Close", "")));
     }
 
@@ -225,7 +252,15 @@ function App() {
         document.getElementById("main-input").value = "";
 
         if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify(new WsMessage("UserMessage", "ToPartner", getMessageStates.message)));
+            const AES = sessionStorage.getItem('AESKey');
+            if (AES) {
+                const encryptedMessage = CryptoJS.AES.encrypt(getMessageStates.message.toString(), AES).toString();
+                const wsMessage = new WsMessage("UserMessage", "ToPartner", encryptedMessage);
+                const jsonString = JSON.stringify(wsMessage);
+
+                socket.send(jsonString);
+            }
+
         } else {
             console.error('WebSocket connection is not open.');
         }

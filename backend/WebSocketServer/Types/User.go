@@ -10,11 +10,11 @@ type User struct {
 	Id        net.Addr
 	Conn      *websocket.Conn
 	PartnerId net.Addr
-	Key       int
+	Key       string //Key for the encryption server to assign the decryption key for E2E
 }
 
 func NewUser(conn *websocket.Conn) User {
-	return User{Conn: conn, Id: conn.RemoteAddr(), PartnerId: nil, Key: 0}
+	return User{Conn: conn, Id: conn.RemoteAddr(), PartnerId: nil, Key: ""}
 }
 
 type UserPool struct {
