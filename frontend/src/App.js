@@ -7,6 +7,7 @@ import './App.css'
 import WsMessage from "./Ws/template";
 import generateUniqueId from "./Utils/generateId";
 import Chat from "./Components/chat/chat";
+import Modal from "./Components/modal/modal";
 let socket;
 //Variable to control the typing popup
 let initialTimeoutDuration = 1000;
@@ -323,36 +324,21 @@ function App() {
             </div>
             {
                getModalStates.modalStateEmpty ?
-                    <div className="modal-wrapper-empty">
-                        <p>Nie można wysyłąć pustych wiadomości. Napisz coś :((</p>
-                        <hr className="modal-line"/>
-                        <div className="modal-button-wrapper">
-                            <button className="modal-button" onClick={closeEmptyModal}>Ok</button>
-                        </div>
-                    </div> : null
+                   <Modal messageTop="Nie można wysyłać pustych wiadomości"  onClose={closeEmptyModal()} />
+                   :  null
             }
 
             {
                 getModalStates.modalStatePartner ?
-                    <div className="modal-wrapper-empty">
-                        <p>Obcy sie rozłączył :((</p>
-                        <hr className="modal-line"/>
-                        <div className="modal-button-wrapper">
-                            <button className="modal-button" onClick={closePartnerModal}>Ok</button>
-                        </div>
-                    </div> : null
+                    <Modal messageTop="Obcy sie rozłączył :(("  onClose={closePartnerModal} />
+                    : null
             }
+
 
             {
                 getModalStates.modalStateError ?
-                    <div className="modal-wrapper-empty">
-                        <p>Coś poszło nie tak po naszej stronie!</p>
-                        <p>Przepraszamy :(</p>
-                        <hr className="modal-line"/>
-                        <div className="modal-button-wrapper">
-                            <button className="modal-button" onClick={closeErrorModal}>Ok</button>
-                        </div>
-                    </div> : null
+                    <Modal messageTop="Coś poszło nie tak po naszej stronie!" messageBottom="Przepraszamy :(" onClose={closeErrorModal} />
+                    : null
             }
         </div>
 
