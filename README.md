@@ -27,11 +27,12 @@ Initial setup:
 - Enter the project directory
 - Run the command "cd frontend"
 - Run the command "npm install" (this may take a while)
-- run the file 'start.bat'
+- Run the test's before the first start by running "run_tests.bat"
+- Run the file 'start.bat'
 
 After this you just run the start.bat file to deploy the Application
 ```
-
+---
 ## Services explained:
 ```
 1. Frontend:
@@ -51,3 +52,16 @@ After this you just run the start.bat file to deploy the Application
 same access key they get the same   AES Key  
 -Does not hold state inside
 ```
+---
+
+## Encryption explained
+```
+The is a multi-step process to ensure user privacy during conversations.
+1.The first step happens when two user's are partnered, they both recieve the same key. 
+This key is used to ensure they both recieve the same encryption key.
+2.They access the E2E server and recieve a shared decrypt/encrypt key.
+3. They cipher the message's using AES preventing any one without the key to access their message's.
+```
+
+---
+## Folder structure explained:

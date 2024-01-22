@@ -10,6 +10,11 @@ import (
 )
 
 func AssignKey(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		// If not, respond with a 405 Method Not Allowed status
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	// Read the body from the request
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

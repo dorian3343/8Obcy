@@ -1,41 +1,271 @@
-2024-01-21 00:25:51 Server Boot . . .
-2024-01-21 00:27:30 New user joined
-2024-01-21 00:27:30 Starting Matching
-2024-01-21 00:27:30 Uneven pool
-2024-01-21 00:27:32 New user joined
-2024-01-21 00:27:32 Starting Matching
-2024-01-21 00:27:32 Pair made + Key's assigned
-2024-01-21 11:20:47 Server Boot . . .
-2024-01-21 11:21:01 New user joined
-2024-01-21 11:21:01 Starting Matching
-2024-01-21 11:21:01 Uneven pool
-2024-01-21 11:21:02 New user joined
-2024-01-21 11:21:02 Starting Matching
-2024-01-21 11:21:02 Pair made + Key's assigned
-2024-01-21 11:21:03 Sending Typing  to partner
-2024-01-21 11:21:03 Sending Typing  to partner
-2024-01-21 11:21:03 Sending Typing  to partner
-2024-01-21 11:21:04 Sending Typing  to partner
-2024-01-21 11:21:04 Sending Typing  to partner
-2024-01-21 11:21:04 Sending Typing  to partner
-2024-01-21 11:21:04 Sending Typing  to partner
-2024-01-21 11:21:05 Sending Typing  to partner
-2024-01-21 11:21:06 Sending  message to partner
-2024-01-21 11:21:09 Could not read message, removing user.
-2024-01-21 11:21:09 Disconnecting pair
-2024-01-21 11:21:11 New user joined
-2024-01-21 11:21:11 Starting Matching
-2024-01-21 11:21:11 Uneven pool
-2024-01-21 11:22:52 Could not read message, removing user.
-2024-01-21 11:22:53 New user joined
-2024-01-21 11:22:53 Starting Matching
-2024-01-21 11:22:53 Uneven pool
-2024-01-21 11:22:58 New user joined
-2024-01-21 11:22:58 Starting Matching
-2024-01-21 11:22:58 Pair made + Key's assigned
-2024-01-21 11:22:59 Disconnecting pair
-2024-01-21 11:22:59 Could not read message, removing user.
-2024-01-21 11:24:01 New user joined
-2024-01-21 11:24:01 Starting Matching
-2024-01-21 11:24:01 Uneven pool
-2024-01-21 11:24:03 Could not read message, removing user.
+2024-01-22 15:28:17 Server Boot . . .
+2024-01-22 15:29:47 New user joined
+2024-01-22 15:29:47 Could not read message, removing user.
+2024-01-22 15:29:52 New user joined
+2024-01-22 15:29:52 Could not read message, removing user.
+2024-01-22 15:42:12 Server Boot . . .
+2024-01-22 15:42:22 New user joined
+2024-01-22 15:42:22 Starting Matching
+2024-01-22 15:42:22 Uneven pool
+2024-01-22 15:42:23 New user joined
+2024-01-22 15:42:23 Starting Matching
+2024-01-22 15:42:23 Pair made + Key's assigned
+2024-01-22 15:42:23 New user joined
+2024-01-22 15:42:23 Starting Matching
+2024-01-22 15:42:23 Uneven pool
+2024-01-22 15:42:26 Could not read message, removing user.
+2024-01-22 15:42:26 Could not read message, removing user.
+2024-01-22 15:42:26 Removing user's partner
+2024-01-22 15:42:26 Could not read message, removing user.
+2024-01-22 15:42:32 New user joined
+2024-01-22 15:42:32 Starting Matching
+2024-01-22 15:42:32 Uneven pool
+2024-01-22 15:42:33 New user joined
+2024-01-22 15:42:33 Starting Matching
+2024-01-22 15:42:33 Pair made + Key's assigned
+2024-01-22 15:42:34 New user joined
+2024-01-22 15:42:34 Starting Matching
+2024-01-22 15:42:34 Uneven pool
+2024-01-22 15:42:36 New user joined
+2024-01-22 15:42:36 Starting Matching
+2024-01-22 15:42:36 Pair made + Key's assigned
+2024-01-22 15:42:37 New user joined
+2024-01-22 15:42:37 Starting Matching
+2024-01-22 15:42:37 Uneven pool
+2024-01-22 15:43:13 Server Boot . . .
+2024-01-22 15:43:20 New user joined
+2024-01-22 15:43:20 Starting Matching
+2024-01-22 15:43:20 Uneven pool
+2024-01-22 15:43:26 New user joined
+2024-01-22 15:43:26 Starting Matching
+2024-01-22 15:43:26 Pair made + Key's assigned
+2024-01-22 15:43:27 New user joined
+2024-01-22 15:43:27 Starting Matching
+2024-01-22 15:43:27 Uneven pool
+2024-01-22 15:43:29 Could not read message, removing user.
+2024-01-22 15:43:29 Could not read message, removing user.
+2024-01-22 15:43:29 Could not read message, removing user.
+2024-01-22 15:43:29 Removing user's partner
+2024-01-22 15:43:34 New user joined
+2024-01-22 15:43:34 Starting Matching
+2024-01-22 15:43:34 Uneven pool
+2024-01-22 15:43:37 New user joined
+2024-01-22 15:43:37 Starting Matching
+2024-01-22 15:43:37 Pair made + Key's assigned
+2024-01-22 15:43:38 New user joined
+2024-01-22 15:43:38 Starting Matching
+2024-01-22 15:43:38 Uneven pool
+2024-01-22 15:44:15 Could not read message, removing user.
+2024-01-22 15:44:15 Could not read message, removing user.
+2024-01-22 15:44:15 Removing user's partner
+2024-01-22 15:44:21 New user joined
+2024-01-22 15:44:21 Starting Matching
+2024-01-22 15:44:21 Pair made + Key's assigned
+2024-01-22 15:44:38 Could not read message, removing user.
+2024-01-22 15:44:38 Removing user's partner
+2024-01-22 15:44:43 New user joined
+2024-01-22 15:44:43 Starting Matching
+2024-01-22 15:44:43 Uneven pool
+2024-01-22 15:44:44 New user joined
+2024-01-22 15:44:44 Starting Matching
+2024-01-22 15:44:44 Pair made + Key's assigned
+2024-01-22 15:45:31 Server Boot . . .
+2024-01-22 15:45:51 New user joined
+2024-01-22 15:45:51 Starting Matching
+2024-01-22 15:45:51 Uneven pool
+2024-01-22 15:45:53 New user joined
+2024-01-22 15:45:53 Starting Matching
+2024-01-22 15:45:53 Pair made + Key's assigned
+2024-01-22 15:45:54 Sending Typing  to partner
+2024-01-22 15:45:54 Sending Typing  to partner
+2024-01-22 15:45:54 Sending Typing  to partner
+2024-01-22 15:45:54 Sending Typing  to partner
+2024-01-22 15:45:56 Sending  message to partner
+2024-01-22 15:45:59 Sending Typing  to partner
+2024-01-22 15:46:00 Sending Typing  to partner
+2024-01-22 15:46:00 Sending Typing  to partner
+2024-01-22 15:46:00 Sending Typing  to partner
+2024-01-22 15:46:00 Sending  message to partner
+2024-01-22 15:46:03 Sending Typing  to partner
+2024-01-22 15:46:03 Sending Typing  to partner
+2024-01-22 15:46:04 Sending Typing  to partner
+2024-01-22 15:46:04 Sending Typing  to partner
+2024-01-22 15:46:04 Sending Typing  to partner
+2024-01-22 15:46:04 Sending Typing  to partner
+2024-01-22 15:46:04 Sending Typing  to partner
+2024-01-22 15:46:04 Sending Typing  to partner
+2024-01-22 15:46:04 Sending Typing  to partner
+2024-01-22 15:46:05 Sending Typing  to partner
+2024-01-22 15:46:05 Sending Typing  to partner
+2024-01-22 15:46:05 Sending  message to partner
+2024-01-22 15:46:16 Sending Typing  to partner
+2024-01-22 15:46:16 Sending Typing  to partner
+2024-01-22 15:46:16 Sending Typing  to partner
+2024-01-22 15:46:16 Sending Typing  to partner
+2024-01-22 15:46:17 Sending Typing  to partner
+2024-01-22 15:46:23 Could not read message, removing user.
+2024-01-22 15:46:23 Disconnecting pair
+2024-01-22 15:46:23 Could not read message, removing user.
+2024-01-22 15:46:23 Removing user's partner
+2024-01-22 15:59:03 Server Boot . . .
+2024-01-22 15:59:15 New user joined
+2024-01-22 15:59:15 Starting Matching
+2024-01-22 15:59:15 Uneven pool
+2024-01-22 15:59:17 New user joined
+2024-01-22 15:59:17 Starting Matching
+2024-01-22 15:59:17 Pair made + Key's assigned
+2024-01-22 15:59:18 Sending Typing  to partner
+2024-01-22 15:59:18 Sending Typing  to partner
+2024-01-22 15:59:18 Sending Typing  to partner
+2024-01-22 15:59:18 Sending Typing  to partner
+2024-01-22 15:59:18 Sending Typing  to partner
+2024-01-22 15:59:18 Sending Typing  to partner
+2024-01-22 15:59:18 Sending Typing  to partner
+2024-01-22 15:59:19 Sending Typing  to partner
+2024-01-22 15:59:19 Sending Typing  to partner
+2024-01-22 15:59:19 Sending Typing  to partner
+2024-01-22 15:59:19 Sending Typing  to partner
+2024-01-22 15:59:19 Sending Typing  to partner
+2024-01-22 15:59:19 Sending Typing  to partner
+2024-01-22 15:59:19 Sending Typing  to partner
+2024-01-22 15:59:19 Sending Typing  to partner
+2024-01-22 15:59:20 Sending Typing  to partner
+2024-01-22 15:59:20 Sending Typing  to partner
+2024-01-22 15:59:20 Sending Typing  to partner
+2024-01-22 15:59:20 Sending Typing  to partner
+2024-01-22 15:59:41 Could not read message, removing user.
+2024-01-22 15:59:41 Removing user's partner
+2024-01-22 15:59:43 New user joined
+2024-01-22 15:59:43 Starting Matching
+2024-01-22 15:59:43 Uneven pool
+2024-01-22 15:59:43 Pair made + Key's assigned
+2024-01-22 15:59:44 Sending Typing  to partner
+2024-01-22 15:59:46 Could not read message, removing user.
+2024-01-22 16:00:41 Server Boot . . .
+2024-01-22 16:00:49 New user joined
+2024-01-22 16:00:49 Starting Matching
+2024-01-22 16:00:49 Uneven pool
+2024-01-22 16:00:51 New user joined
+2024-01-22 16:00:51 Starting Matching
+2024-01-22 16:00:51 Pair made + Key's assigned
+2024-01-22 16:00:55 Sending Typing  to partner
+2024-01-22 16:00:55 Sending Typing  to partner
+2024-01-22 16:00:55 Sending Typing  to partner
+2024-01-22 16:00:55 Sending Typing  to partner
+2024-01-22 16:00:56 Sending Typing  to partner
+2024-01-22 16:00:56 Sending Typing  to partner
+2024-01-22 16:00:56 Sending Typing  to partner
+2024-01-22 16:00:56 Sending Typing  to partner
+2024-01-22 16:00:59 Sending Typing  to partner
+2024-01-22 16:01:01 Could not read message, removing user.
+2024-01-22 16:01:01 Removing user's partner
+2024-01-22 16:01:08 New user joined
+2024-01-22 16:01:08 Starting Matching
+2024-01-22 16:01:08 Uneven pool
+2024-01-22 16:01:08 Pair made + Key's assigned
+2024-01-22 16:01:15 Could not read message, removing user.
+2024-01-22 16:01:51 Server Boot . . .
+2024-01-22 16:02:25 New user joined
+2024-01-22 16:02:25 Starting Matching
+2024-01-22 16:02:25 Uneven pool
+2024-01-22 16:02:29 New user joined
+2024-01-22 16:02:29 Starting Matching
+2024-01-22 16:02:29 Pair made + Key's assigned
+2024-01-22 16:02:34 Sending Typing  to partner
+2024-01-22 16:02:39 Sending Typing  to partner
+2024-01-22 16:02:39 Sending Typing  to partner
+2024-01-22 16:02:41 Could not read message, removing user.
+2024-01-22 16:02:41 Removing user's partner
+2024-01-22 16:03:51 Server Boot . . .
+2024-01-22 16:04:35 New user joined
+2024-01-22 16:04:35 Starting Matching
+2024-01-22 16:04:35 Uneven pool
+2024-01-22 16:04:37 New user joined
+2024-01-22 16:04:37 Starting Matching
+2024-01-22 16:04:37 Pair made + Key's assigned
+2024-01-22 16:04:38 Sending Typing  to partner
+2024-01-22 16:04:38 Sending Typing  to partner
+2024-01-22 16:04:39 Sending Typing  to partner
+2024-01-22 16:04:39 Sending Typing  to partner
+2024-01-22 16:04:39 Sending Typing  to partner
+2024-01-22 16:04:43 Sending Typing  to partner
+2024-01-22 16:04:45 Could not read message, removing user.
+2024-01-22 16:04:45 Removing user's partner
+2024-01-22 16:05:14 Server Boot . . .
+2024-01-22 16:05:44 New user joined
+2024-01-22 16:05:44 Starting Matching
+2024-01-22 16:05:44 Uneven pool
+2024-01-22 16:05:48 New user joined
+2024-01-22 16:05:48 Starting Matching
+2024-01-22 16:05:48 Pair made + Key's assigned
+2024-01-22 16:05:50 Sending Typing  to partner
+2024-01-22 16:05:51 Sending  message to partner
+2024-01-22 16:05:53 Sending Typing  to partner
+2024-01-22 16:05:59 Sending Typing  to partner
+2024-01-22 16:05:59 Sending Typing  to partner
+2024-01-22 16:05:59 Sending Typing  to partner
+2024-01-22 16:05:59 Sending Typing  to partner
+2024-01-22 16:05:59 Sending Typing  to partner
+2024-01-22 16:05:59 Sending Typing  to partner
+2024-01-22 16:05:59 Sending  message to partner
+2024-01-22 16:06:01 Sending Typing  to partner
+2024-01-22 16:06:02 Sending Typing  to partner
+2024-01-22 16:06:02 Sending Typing  to partner
+2024-01-22 16:06:02 Sending Typing  to partner
+2024-01-22 16:06:02 Sending Typing  to partner
+2024-01-22 16:06:02 Sending  message to partner
+2024-01-22 16:06:05 Sending Typing  to partner
+2024-01-22 16:06:05 Sending Typing  to partner
+2024-01-22 16:06:06 Sending Typing  to partner
+2024-01-22 16:06:06 Sending  message to partner
+2024-01-22 16:06:07 Could not read message, removing user.
+2024-01-22 16:06:07 Disconnecting pair
+2024-01-22 16:06:07 Could not read message, removing user.
+2024-01-22 16:06:07 Removing user's partner
+2024-01-22 16:06:09 New user joined
+2024-01-22 16:06:09 Starting Matching
+2024-01-22 16:06:09 Uneven pool
+2024-01-22 16:12:43 Could not read message, removing user.
+2024-01-22 16:15:29 Server Boot . . .
+2024-01-22 16:15:35 New user joined
+2024-01-22 16:15:35 Starting Matching
+2024-01-22 16:15:35 Uneven pool
+2024-01-22 16:15:40 New user joined
+2024-01-22 16:15:40 Starting Matching
+2024-01-22 16:15:40 Pair made + Key's assigned
+2024-01-22 16:15:41 Sending Typing  to partner
+2024-01-22 16:16:44 Server Boot . . .
+2024-01-22 16:16:55 New user joined
+2024-01-22 16:16:55 Starting Matching
+2024-01-22 16:16:55 Uneven pool
+2024-01-22 16:16:56 New user joined
+2024-01-22 16:16:56 Starting Matching
+2024-01-22 16:16:56 Pair made + Key's assigned
+2024-01-22 16:17:00 Sending Typing  to partner
+2024-01-22 16:17:04 Sending Typing  to partner
+2024-01-22 16:17:05 Sending Typing  to partner
+2024-01-22 16:17:05 Sending Typing  to partner
+2024-01-22 16:17:06 Sending Typing  to partner
+2024-01-22 16:17:09 Sending Typing  to partner
+2024-01-22 16:19:21 Server Boot . . .
+2024-01-22 16:19:48 New user joined
+2024-01-22 16:19:48 Starting Matching
+2024-01-22 16:19:48 Uneven pool
+2024-01-22 16:19:53 New user joined
+2024-01-22 16:19:53 Starting Matching
+2024-01-22 16:19:53 Pair made + Key's assigned
+2024-01-22 16:19:54 Sending Typing  to partner
+2024-01-22 16:19:56 Sending Typing  to partner
+2024-01-22 16:19:56 Sending Typing  to partner
+2024-01-22 16:20:55 Server Boot . . .
+2024-01-22 16:21:04 New user joined
+2024-01-22 16:21:04 Starting Matching
+2024-01-22 16:21:04 Uneven pool
+2024-01-22 16:21:06 New user joined
+2024-01-22 16:21:06 Starting Matching
+2024-01-22 16:21:06 Pair made + Key's assigned
+2024-01-22 16:21:06 Sending Typing  to partner
+2024-01-22 16:21:07 Sending  message to partner
+2024-01-22 16:21:09 Could not read message, removing user.
+2024-01-22 16:21:09 Could not read message, removing user.
+2024-01-22 16:21:09 Removing user's partner

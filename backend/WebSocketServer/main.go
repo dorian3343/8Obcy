@@ -23,7 +23,7 @@ var upgrader = websocket.Upgrader{
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println(err)
+		LogConf.Log("Something went wrong during upgrade:" + err.Error())
 		return
 	}
 	defer conn.Close()
@@ -34,30 +34,19 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
 	for {
 		var data Types.WsMessage
-		// Read message from the client
+		// Read message from the client, if its broken, send a message that its broken
 		_, p, err := conn.ReadMessage()
 		if err != nil {
-			Handlers.ReportError(user, "", "Error! Could not read message, closing socket")
-			LogConf.Log("Could not read message, removing user.")
-			Pool.Remove(user)
-			Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
-			Pool.RemoveById(user.PartnerId)
-			LogConf.Log("Removing user's partner")
-			Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
-
+			Handlers.HandleErrorMessage(user, Pool, LogConf)
 			return
 		}
+
 		err = json.Unmarshal(p, &data)
 		if err != nil {
-			Handlers.ReportError(user, "", "Error! Could not read message, closing socket")
-			Pool.Remove(user)
-			LogConf.Log("Could not read message, removing user.")
-			Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
-			Pool.RemoveById(user.PartnerId)
-			LogConf.Log("Removing user's partner")
-			Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
+			Handlers.HandleErrorMessage(user, Pool, LogConf)
 			return
 		}
+
 		if data.MessageType == "UserMessage" {
 			if data.RequestType == "FindPartner" {
 				if user.PartnerId == nil {
@@ -74,8 +63,8 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 							user.PartnerId = user1.Conn.RemoteAddr()
 							key, err := Utils.GenerateKey()
 							if err != nil {
-								fmt.Println(err)
-								LogConf.Log("Error while generating Key")
+								LogConf.Log("Errr while generating key:" + err.Error())
+
 								return
 							}
 							user.Key = key
@@ -90,7 +79,6 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			} else if data.RequestType == "ToPartner" {
-
 				Handlers.SendPartnerMessage(user, data.Contents, Pool)
 				LogConf.Log("Sending  message to partner")
 			} else if data.RequestType == "Typing" {
@@ -99,21 +87,9 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			} else {
 				Handlers.ReportError(user, "", "Unknown Request Type")
 				LogConf.Log("Recieved unknown request type for Message Type:User")
-
 			}
 		} else if data.MessageType == "SystemMessage" {
-			if data.RequestType == "Close" {
-				Pool.Remove(user)
-				Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
-				Pool.RemoveById(user.PartnerId)
-				Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
-				LogConf.Log("Disconnecting pair")
-				return
-
-			} else {
-				Handlers.ReportError(user, "", "Unknown Request Type")
-				LogConf.Log("Recieved unknown request type for Message Type:System")
-			}
+			Handlers.HandleSystemMessage(data, user, Pool, LogConf)
 		} else {
 			Handlers.ReportError(user, "", "Unknown Message Type")
 			LogConf.Log("Recieved unknown Message Type")
