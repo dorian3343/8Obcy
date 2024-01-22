@@ -216,8 +216,7 @@ function App() {
         if (getMessageStates.leaveMessage === "Rozłącz się") {
             setMessageStates(prevState => ({ ...prevState, leaveMessage: "Napewno?" }));
         } else {
-            socket.send(JSON.stringify(new WsMessage("SystemMessage", "Close", "")));
-            socket.close();
+            socket.send(JSON.stringify(new WsMessage("SystemMessage", "Disconnect", "")));
             resetStates()
         }
     }

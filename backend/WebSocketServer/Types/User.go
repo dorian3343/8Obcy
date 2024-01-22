@@ -49,3 +49,30 @@ func (u_p *UserPool) RemoveById(id net.Addr) {
 		}
 	}
 }
+
+func (u_p *UserPool) FindById(id net.Addr) (*User, error) {
+	if id == nil {
+		return nil, fmt.Errorf("Error while finding user by ID, ID is nil")
+	}
+
+	for _, user := range u_p.Pool {
+		if user.Id == id {
+			return user, nil
+		}
+	}
+
+	return nil, fmt.Errorf("User with ID %v not found", id)
+}
+
+func (u_p *UserPool) Unpair(user *User) error {
+	if user.PartnerId == nil {
+		return fmt.Errorf("Error while unpairing, user's partner is nil")
+	}
+	partner, err := u_p.FindById(user.PartnerId)
+	if err != nil {
+		return err
+	}
+	user.PartnerId = nil
+	partner.PartnerId = nil
+	return nil
+}

@@ -2,6 +2,7 @@ package Handlers
 
 import (
 	"WebSocketServer/Types"
+	"errors"
 	"fmt"
 	"net"
 )
@@ -43,17 +44,26 @@ func SendSystemMessageToPartner(user Types.User, requestType, message string, Po
 
 	partner.Conn.WriteJSON(Types.NewWsMessage("SystemMessage", requestType, message))
 }
-func SendPartnerMessage(user Types.User, message string, Pool Types.UserPool) {
+func SendPartnerMessage(user Types.User, message string, Pool Types.UserPool) error {
 	var partner Types.User
-	for i := 0; i < len(Pool.Pool); i++ {
 
+	for i := 0; i < len(Pool.Pool); i++ {
 		fmt.Println(Pool.Pool[i])
 		if Pool.Pool[i].Id == user.PartnerId {
 			partner = *Pool.Pool[i]
 			break
 		}
 	}
-	partner.Conn.WriteJSON(Types.NewWsMessage("PartnerMessage", "", message))
+
+	if partner.Conn == nil {
+		return errors.New("partner connection is nil")
+	}
+
+	if err := partner.Conn.WriteJSON(Types.NewWsMessage("PartnerMessage", "", message)); err != nil {
+		return fmt.Errorf("error sending message to partner: %v", err)
+	}
+
+	return nil
 }
 
 func SendAll(requestType string, message string, pool Types.UserPool) {

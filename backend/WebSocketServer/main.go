@@ -34,7 +34,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
 	for {
 		var data Types.WsMessage
-		// Read message from the client, if its broken, send a message that its broken
+		// Read message from the client, if it's broken, send a message that it's broken
 		_, p, err := conn.ReadMessage()
 		if err != nil {
 			Handlers.HandleErrorMessage(user, Pool, LogConf)
@@ -46,53 +46,52 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			Handlers.HandleErrorMessage(user, Pool, LogConf)
 			return
 		}
-
-		if data.MessageType == "UserMessage" {
-			if data.RequestType == "FindPartner" {
-				if user.PartnerId == nil {
-					//Match users into pair's
-					LogConf.Log("Starting Matching")
-					poolLength := len(Pool.Pool)
-					if poolLength%2 != 0 {
-						LogConf.Log("Uneven pool")
-					}
-					for i := 0; i < poolLength-1; i += 2 {
-						if Pool.Pool[i].PartnerId == nil && Pool.Pool[i] != &user {
-							user1 := Pool.Pool[i]
-							user1.PartnerId = user.Conn.RemoteAddr()
-							user.PartnerId = user1.Conn.RemoteAddr()
-							key, err := Utils.GenerateKey()
-							if err != nil {
-								LogConf.Log("Errr while generating key:" + err.Error())
-
-								return
-							}
-							user.Key = key
-							user1.Key = key
-							Handlers.SendSystemMessage(*user1, "", "Found Partner")
-							Handlers.SendSystemMessage(user, "", "Found Partner")
-							Handlers.SendSystemMessage(*user1, "SetEncKey", key)
-							Handlers.SendSystemMessage(user, "SetEncKey", key)
-							LogConf.Log("Pair made + Key's assigned")
-							break
+		switch data.MessageType {
+		case "UserMessage":
+			switch data.RequestType {
+			case "FindPartner":
+				// Match users into pairs
+				LogConf.Log("Starting Matching")
+				poolLength := len(Pool.Pool)
+				if poolLength%2 != 0 {
+					LogConf.Log("Uneven pool")
+				}
+				for i := 0; i < poolLength-1; i += 2 {
+					if Pool.Pool[i].PartnerId == nil && Pool.Pool[i] != &user {
+						user1 := Pool.Pool[i]
+						user1.PartnerId = user.Conn.RemoteAddr()
+						user.PartnerId = user1.Conn.RemoteAddr()
+						key, err := Utils.GenerateKey()
+						if err != nil {
+							LogConf.Log("Error while generating key:" + err.Error())
+							return
 						}
+						user.Key = key
+						user1.Key = key
+						Handlers.SendSystemMessage(*user1, "", "Found Partner")
+						Handlers.SendSystemMessage(user, "", "Found Partner")
+						Handlers.SendSystemMessage(*user1, "SetEncKey", key)
+						Handlers.SendSystemMessage(user, "SetEncKey", key)
+						LogConf.Log("Pair made + Key's assigned")
+						break
 					}
 				}
-			} else if data.RequestType == "ToPartner" {
+
+			case "ToPartner":
 				Handlers.SendPartnerMessage(user, data.Contents, Pool)
-				LogConf.Log("Sending  message to partner")
-			} else if data.RequestType == "Typing" {
+				LogConf.Log("Sending message to partner")
+			case "Typing":
 				Handlers.SendSystemMessageToPartner(user, "PartnerTyping", "", Pool)
-				LogConf.Log("Sending Typing  to partner")
-			} else {
+				LogConf.Log("Sending Typing to partner")
+			default:
 				Handlers.ReportError(user, "", "Unknown Request Type")
-				LogConf.Log("Recieved unknown request type for Message Type:User")
+				LogConf.Log("Received unknown request type for Message Type:User")
 			}
-		} else if data.MessageType == "SystemMessage" {
+		case "SystemMessage":
 			Handlers.HandleSystemMessage(data, user, Pool, LogConf)
-		} else {
+		default:
 			Handlers.ReportError(user, "", "Unknown Message Type")
-			LogConf.Log("Recieved unknown Message Type")
+			LogConf.Log("Received unknown Message Type")
 		}
 	}
 }

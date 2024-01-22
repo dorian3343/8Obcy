@@ -8,9 +8,10 @@ import (
 
 // System Messages
 func HandleSystemMessage(data Types.WsMessage, user Types.User, Pool Types.UserPool, LogConf Utils.LogConfig) {
-	if data.RequestType == "Close" {
+	switch data.RequestType {
+	case "Close":
 		HandleSystemMessageClose(user, Pool, LogConf)
-	} else {
+	default:
 		ReportError(user, "", "Unknown Request Type")
 		LogConf.Log("Received unknown request type for Message Type:System")
 	}
