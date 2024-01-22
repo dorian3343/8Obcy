@@ -3,10 +3,11 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-top: 70px;
 }
 
 .intro-wrapper {
-    padding: 10px;
+    padding: 20px;
     background-color: #3C3F42;
     border-radius: 0.6em;
     border: 2px solid #444;
@@ -14,6 +15,7 @@
     width: 600px;
     height: 600px;
 }
+
 
 .join-button-wrapper{
     display: flex;
@@ -46,6 +48,11 @@ h1{
     text-align: center;
 }
 
+.chat-wrapper{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
 
 .input-wrapper{
     display: flex;
@@ -121,4 +128,25 @@ text-align: center;
 .modal-line {
     width: 100%;
     border: 1px solid #65665E;
+}
+
+@media only screen and (max-width: 767px) {
+    .input-wrapper{
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+
+    }
+    .intro-wrapper{
+        max-width: 90vw;
+        height:auto;
+        font-size: 12px;
+    }
+    .text-input {
+        max-width: 95vw;
+    }
+    .button-wrapper{
+        display: none;
+    }
 }

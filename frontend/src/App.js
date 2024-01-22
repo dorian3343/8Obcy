@@ -278,7 +278,7 @@ function App() {
             <br/>
             <div className="app-main-wrapper">
                 {getChatStates.inChat ? <div>
-                        <div>
+                        <div className="chat-wrapper">
                             <Chat chatStatus={getChatStates.status} messages={getMessageStates.messages} showTyping={getModalStates.popupPartnerTyping}/>
                         </div>
                         <div className="input-wrapper">

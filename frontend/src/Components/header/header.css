@@ -1,4 +1,6 @@
-.header-wrapper{
+.header-wrapper {
+    position: fixed;
+    top: 0;
     height: 83px;
     display: flex;
     justify-content: space-between;
@@ -8,7 +10,10 @@
     border-bottom: 2px solid #0A141F;
     padding-left: 20px;
     padding-right: 50px;
+    width: calc(100% - 50px);
+    z-index: 1000;
 }
+
 .logo{
     height: 130px;
 }
@@ -17,4 +22,11 @@
     color: #DAB620;
     font-weight: bolder;
     font-size: 1.75em;
+}
+
+
+@media only screen and (max-width: 767px) {
+    .user-count{
+        display: none;
+    }
 }
