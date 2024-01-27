@@ -4,12 +4,14 @@
 
 .button-div{
     text-align: center;
+
 }
 
 .modal-button-wrapper{
     width: 100%;
     display: flex;
     justify-content: space-around;
+
 }
 
 .modal-button{
@@ -19,6 +21,7 @@
     color: #aaa;
     background-color: #65665E;
     border: 1px #2C2C2C;
+    padding: 10px;
 }
 .modal-button:hover{
     background-color: #4f504a;
