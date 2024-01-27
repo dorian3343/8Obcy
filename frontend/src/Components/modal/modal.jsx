@@ -1,6 +1,6 @@
 import React from "react";
-
-function  Modal({messageTop,messageBottom,onClose}) {
+import './modal.css'
+function  Modal({messageTop,messageBottom,mainButtonFunction,mainButtonText,secondaryButtonText,secondaryButtonFunction}) {
     return (
         <div className="modal-wrapper-empty">
             <p>{messageTop}</p>
@@ -9,7 +9,16 @@ function  Modal({messageTop,messageBottom,onClose}) {
 
             <hr className="modal-line"/>
             <div className="modal-button-wrapper">
-                <button className="modal-button" onClick={onClose}>Ok</button>
+                <div className="button-div">
+                    <button className="modal-button" onClick={mainButtonFunction}>{mainButtonText}</button>
+                </div>
+                {
+                    (secondaryButtonFunction !== undefined && secondaryButtonText !== undefined)? <div className="button-div">
+                            <button className="modal-button"
+                                    onClick={secondaryButtonFunction}>{secondaryButtonText}</button>
+                        </div> : null
+                }
+
             </div>
         </div>
     );

@@ -106,29 +106,6 @@ h1{
     flex-direction: column;
 }
 
-.modal-wrapper p{
-    font-size: 18px;
-}
-
-.modal-button-wrapper{
-text-align: center;
-}
-
-.modal-button{
-    font-size: 25px;
-    width: 70px;
-    border-radius: 0;
-    color: #aaa;
-    background-color: #65665E;
-    border: 1px #2C2C2C;
-}
-.modal-button:hover{
-    background-color: #4f504a;
-}
-.modal-line {
-    width: 100%;
-    border: 1px solid #65665E;
-}
 
 @media only screen and (max-width: 767px) {
     .input-wrapper{

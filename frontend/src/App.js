@@ -228,9 +228,12 @@ function App() {
         setModalStates(prevState => ({ ...prevState, modalStateError: false }));
     }
 
-    function closePartnerModal() {
+    function closePartnerModal(func) {
         resetStates()
-        handleJoin();
+        if (typeof  func === 'function'){
+            func();
+        }
+
     }
 
     function handleSend() {
@@ -323,20 +326,32 @@ function App() {
             </div>
             {
                getModalStates.modalStateEmpty ?
-                   <Modal messageTop="Nie można wysyłać pustych wiadomości"  onClose={closeEmptyModal()} />
+                   <Modal
+                       messageTop="Nie można wysyłać pustych wiadomości"
+                       mainButtonFunction={closeEmptyModal}
+                       mainButtonText="Ok" />
                    :  null
             }
 
             {
                 getModalStates.modalStatePartner ?
-                    <Modal messageTop="Obcy sie rozłączył :(("  onClose={closePartnerModal} />
+                    <Modal
+                        messageTop="Obcy się rozłączył :(("
+                        mainButtonFunction={() => closePartnerModal(handleJoin)}
+                        mainButtonText="Ok"
+                        secondaryButtonText="Wyjdź"
+                        secondaryButtonFunction={closePartnerModal}
+                    />
                     : null
             }
 
 
             {
                 getModalStates.modalStateError ?
-                    <Modal messageTop="Coś poszło nie tak po naszej stronie!" messageBottom="Przepraszamy :(" onClose={closeErrorModal} />
+                    <Modal
+                        messageTop="Coś poszło nie tak po naszej stronie!"
+                        messageBottom="Przepraszamy :("
+                        mainButtonFunction={closeErrorModal} mainButtonText="Ok" />
                     : null
             }
         </div>

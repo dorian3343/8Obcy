@@ -1,0 +1,29 @@
+.modal-wrapper p{
+    font-size: 18px;
+}
+
+.button-div{
+    text-align: center;
+}
+
+.modal-button-wrapper{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.modal-button{
+    font-size: 25px;
+    width: fit-content;
+    border-radius: 0;
+    color: #aaa;
+    background-color: #65665E;
+    border: 1px #2C2C2C;
+}
+.modal-button:hover{
+    background-color: #4f504a;
+}
+.modal-line {
+    width: 100%;
+    border: 1px solid #65665E;
+}
