@@ -64,4 +64,3 @@ This key is used to ensure they both recieve the same encryption key.
 ```
 
 ---
-## Folder structure explained:
