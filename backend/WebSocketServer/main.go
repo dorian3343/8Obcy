@@ -37,13 +37,25 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		// Read message from the client, if it's broken, send a message that it's broken
 		_, p, err := conn.ReadMessage()
 		if err != nil {
-			Handlers.HandleErrorMessage(user, Pool, LogConf)
+			Handlers.ReportError(user, "", "Error! Could not read message, closing socket")
+			LogConf.Log("Could not read message, removing user.")
+			Pool.Remove(user)
+			Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
+			Pool.RemoveById(user.PartnerId)
+			LogConf.Log("Removing user's partner")
+			Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
 			return
 		}
 
 		err = json.Unmarshal(p, &data)
 		if err != nil {
-			Handlers.HandleErrorMessage(user, Pool, LogConf)
+			Handlers.ReportError(user, "", "Error! Could not read message, closing socket")
+			Pool.Remove(user)
+			LogConf.Log("Could not read message, removing user.")
+			Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
+			Pool.RemoveById(user.PartnerId)
+			LogConf.Log("Removing user's partner")
+			Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
 			return
 		}
 		switch data.MessageType {
@@ -74,6 +86,13 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 						Handlers.SendSystemMessage(user, "SetEncKey", key)
 						LogConf.Log("Pair made + Key's assigned")
 						break
+					} else {
+						Pool.Remove(user)
+						Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Something went wrong")
+						Pool.RemoveById(user.PartnerId)
+						Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
+						LogConf.Log("Disconnecting pair due to error")
+						return
 					}
 				}
 
@@ -88,7 +107,18 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 				LogConf.Log("Received unknown request type for Message Type:User")
 			}
 		case "SystemMessage":
-			Handlers.HandleSystemMessage(data, user, Pool, LogConf)
+			switch data.RequestType {
+			case "Close":
+				Pool.Remove(user)
+				Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
+				Pool.RemoveById(user.PartnerId)
+				Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
+				LogConf.Log("Disconnecting pair")
+				return
+			default:
+				Handlers.ReportError(user, "", "Unknown Request Type")
+				LogConf.Log("Recieved unknown request type for Message Type:System")
+			}
 		default:
 			Handlers.ReportError(user, "", "Unknown Message Type")
 			LogConf.Log("Received unknown Message Type")

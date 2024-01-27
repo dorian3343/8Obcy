@@ -202,7 +202,7 @@ function App() {
                 document.getElementById("main-input").blur();
                 break;
             case 'Escape':
-                handleEscapeKey();
+                handleLeave();
                 break;
             default:
                 if (socket !== undefined){
@@ -212,11 +212,11 @@ function App() {
         }
     }
 
-    function handleEscapeKey() {
+    function handleLeave() {
         if (getMessageStates.leaveMessage === "Rozłącz się") {
             setMessageStates(prevState => ({ ...prevState, leaveMessage: "Napewno?" }));
         } else {
-            socket.send(JSON.stringify(new WsMessage("SystemMessage", "Disconnect", "")));
+            socket.send(JSON.stringify(new WsMessage("SystemMessage", "Close", "")));
             resetStates()
         }
     }
@@ -281,7 +281,7 @@ function App() {
                             <Chat chatStatus={getChatStates.status} messages={getMessageStates.messages} showTyping={getModalStates.popupPartnerTyping}/>
                         </div>
                         <div className="input-wrapper">
-                            <div className="button-wrapper" id="buttonLeave">
+                            <div className="button-wrapper" id="buttonLeave" onClick={handleLeave}>
                                 <p>{getMessageStates.leaveMessage}</p>
                                 <p style={{color: "#9E8F6D"}}>ESC</p>
                             </div>
