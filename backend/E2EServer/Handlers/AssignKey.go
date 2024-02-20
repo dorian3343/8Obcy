@@ -4,7 +4,7 @@ import (
 	"E2EServer/Types"
 	"E2EServer/Utils"
 	"encoding/json"
-	"fmt"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
 )
@@ -24,12 +24,13 @@ func AssignKey(w http.ResponseWriter, r *http.Request) {
 	var requestBody Types.E2EKeyMessage
 	err = json.Unmarshal(body, &requestBody)
 	if err != nil {
+		log.Err(err)
 		http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
 		return
 	}
 	aesKey, err := Utils.GenerateAESKey(requestBody.Key)
 	if err != nil {
-		fmt.Println(err)
+		log.Err(err)
 		http.Error(w, "Error finding or creating AES key", http.StatusInternalServerError)
 		return
 	}
@@ -39,7 +40,7 @@ func AssignKey(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
-		fmt.Println("Error encoding response:", err)
+		log.Err(err)
 		http.Error(w, "Error encoding response", http.StatusInternalServerError)
 		return
 	}

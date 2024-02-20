@@ -7,12 +7,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
 var Pool = Types.NewUserPool()
-var LogConf = Utils.LogConfig{Path: "main.log", TimeStamp: true}
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -21,16 +23,30 @@ var upgrader = websocket.Upgrader{
 }
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+	file, err := os.OpenFile("./log.json", os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error opening log file")
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Fatal().Err(err).Msg("Error while closing log file")
+		}
+	}(file)
+
+	multi := zerolog.MultiLevelWriter(zerolog.ConsoleWriter{Out: os.Stdout}, file)
+	log.Logger = zerolog.New(multi).With().Timestamp().Logger()
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		LogConf.Log("Something went wrong during upgrade:" + err.Error())
+		log.Err(err).Msg("Something went wrong during upgrade")
 		return
 	}
 	defer conn.Close()
 
 	user := Types.NewUser(conn)
 	Pool.Push(&user)
-	LogConf.Log("New user joined")
+	log.Info().Msg("New User Joined")
 	Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
 	for {
 		var data Types.WsMessage
@@ -38,11 +54,11 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		_, p, err := conn.ReadMessage()
 		if err != nil {
 			Handlers.ReportError(user, "", "Error! Could not read message, closing socket")
-			LogConf.Log("Could not read message, removing user.")
+			log.Err(err).Msg("Could not read message, removing user.")
 			Pool.Remove(user)
 			Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
 			Pool.RemoveById(user.PartnerId)
-			LogConf.Log("Removing user's partner")
+			log.Info().Msg("Removing user's partner")
 			Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
 			return
 		}
@@ -51,10 +67,10 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			Handlers.ReportError(user, "", "Error! Could not read message, closing socket")
 			Pool.Remove(user)
-			LogConf.Log("Could not read message, removing user.")
+			log.Error().Msg("Could not read message, removing user.")
 			Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
 			Pool.RemoveById(user.PartnerId)
-			LogConf.Log("Removing user's partner")
+			log.Info().Msg("Removing Partner")
 			Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
 			return
 		}
@@ -63,10 +79,10 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			switch data.RequestType {
 			case "FindPartner":
 				// Match users into pairs
-				LogConf.Log("Starting Matching")
+				log.Debug().Msg("Started Matching")
 				poolLength := len(Pool.Pool)
 				if poolLength%2 != 0 {
-					LogConf.Log("Uneven pool")
+					log.Debug().Msg("Uneven Pool")
 				}
 				for i := 0; i < poolLength-1; i += 2 {
 					if Pool.Pool[i].PartnerId == nil && Pool.Pool[i] != &user {
@@ -75,7 +91,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 						user.PartnerId = user1.Conn.RemoteAddr()
 						key, err := Utils.GenerateKey()
 						if err != nil {
-							LogConf.Log("Error while generating key:" + err.Error())
+							log.Err(err).Msg("Error while generating key:")
 							return
 						}
 						user.Key = key
@@ -84,27 +100,27 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 						Handlers.SendSystemMessage(user, "", "Found Partner")
 						Handlers.SendSystemMessage(*user1, "SetEncKey", key)
 						Handlers.SendSystemMessage(user, "SetEncKey", key)
-						LogConf.Log("Pair made + Key's assigned")
+						log.Info().Msg("Made encryption key pair")
 						break
 					} else {
 						Pool.Remove(user)
 						Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Something went wrong")
 						Pool.RemoveById(user.PartnerId)
 						Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
-						LogConf.Log("Disconnecting pair due to error")
+						log.Info().Msg("Disconnecting pair")
 						return
 					}
 				}
 
 			case "ToPartner":
 				Handlers.SendPartnerMessage(user, data.Contents, Pool)
-				LogConf.Log("Sending message to partner")
+				log.Info().Msg("Sending message to parnter")
 			case "Typing":
 				Handlers.SendSystemMessageToPartner(user, "PartnerTyping", "", Pool)
-				LogConf.Log("Sending Typing to partner")
+				log.Info().Msg("Sending typing to partner")
 			default:
 				Handlers.ReportError(user, "", "Unknown Request Type")
-				LogConf.Log("Received unknown request type for Message Type:User")
+				log.Info().Msg("Received unknown request type for Message Type:User")
 			}
 		case "SystemMessage":
 			switch data.RequestType {
@@ -113,15 +129,15 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 				Handlers.ReportErrorById(user.PartnerId, "Disconnect", Pool, "Error! Partner Disconnected")
 				Pool.RemoveById(user.PartnerId)
 				Handlers.SendAll("UpdateCount", strconv.Itoa(len(Pool.Pool)), Pool)
-				LogConf.Log("Disconnecting pair")
+				log.Info().Msg("Disconnecting pair")
 				return
 			default:
 				Handlers.ReportError(user, "", "Unknown Request Type")
-				LogConf.Log("Recieved unknown request type for Message Type:System")
+				log.Error().Msg("Recieved unknown request type for Message Type:System")
 			}
 		default:
 			Handlers.ReportError(user, "", "Unknown Message Type")
-			LogConf.Log("Received unknown Message Type")
+			log.Error().Msg("Received unknown Message Type")
 		}
 	}
 }
@@ -131,10 +147,10 @@ func main() {
 	http.HandleFunc("/count", Handlers.HandleUserCount(&Pool))
 
 	port := 4200
-	LogConf.Log("Server Boot . . .")
-	fmt.Printf("WebSocket server is listening on :%d...\n", port)
+	log.Info().Msg("Server Boot . . .")
+	log.Info().Msgf("WebSocket server is listening on :%d...\n", port)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal().Err(err)
 	}
 }
